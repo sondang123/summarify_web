@@ -58,6 +58,7 @@ const config = {
           secondary_1: "#FE8253",
           success: "#56C490 ",
           error: "#FE5353",
+          background: "#F9F8FF",
         },
         neutral: {
           0: "#170427",
@@ -233,6 +234,10 @@ const config = {
         },
         ".typo-s56-w800": {
           fontSize: "56px",
+          fontWeight: "800",
+        },
+        ".typo-s48-w800": {
+          fontSize: "48px",
           fontWeight: "800",
         },
         ".typo-s48-w600": {

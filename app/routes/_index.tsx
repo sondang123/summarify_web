@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Button } from "~/components/ui/button";
-import { showToastSuccess } from "~/helper/toast";
+import { useState } from "react";
+import { StepSummary } from "~/components/feature/step-summary";
+import { StepUploadFile } from "~/components/feature/step-upload-file";
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,49 +11,31 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const [stepUpload, setStepUpload] = useState("UPLOAD");
   return (
-    <div className="font-sans p-4">
-      <h1 className="text-3xl">Welcome to Remix</h1>
-      <ul className="list-disc mt-4 pl-6 space-y-2">
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/quickstart"
-            rel="noreferrer"
-          >
-            5m Quick Start
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/tutorial"
-            rel="noreferrer"
-          >
-            30m Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/docs"
-            rel="noreferrer"
-          >
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-      <Button
-        className="bg-slate-400"
-        onClick={() => {
-          showToastSuccess("alo");
-        }}
-      >
-        Click me
-      </Button>
+    <div className="min-h-lvh bg-[url('assets/images/bg-home.png')] bg-no-repeat bg-cover bg-center">
+      <div className="container pt-32 pb-10">
+        <p className="typo-s48-w800 text-center text-main-secondary_1">
+          Summarize videos & create quiz
+        </p>
+        <p className="typo-s18-w500 text-neutral-1 text-center">
+          Take notes from YouTube videos and other supported File easily.
+        </p>
+
+        <div className="bg-white rounded-4.5 p-10 mt-10">
+          {stepUpload === "SUMMARY" ? (
+            <StepSummary
+              setStepUpload={setStepUpload}
+              stepUpload={stepUpload}
+            />
+          ) : (
+            <StepUploadFile
+              setStepUpload={setStepUpload}
+              stepUpload={stepUpload}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
