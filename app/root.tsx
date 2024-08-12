@@ -9,6 +9,7 @@ import stylesheet from "~/tailwind.css?url";
 import type { LinksFunction } from "@remix-run/node";
 import { AppToast } from "~/components/app-components/app-toast";
 import "react-toastify/dist/ReactToastify.css";
+import { Header } from "~/components/feature/header";
 export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: stylesheet },
@@ -49,6 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="font-manrope antialiased">
+        <Header />
         {children}
         <AppToast />
         <ScrollRestoration />
