@@ -1,4 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
+import { Button } from "~/components/ui/button";
+import { showToastSuccess } from "~/helper/toast";
 
 export const meta: MetaFunction = () => {
   return [
@@ -43,6 +45,14 @@ export default function Index() {
           </a>
         </li>
       </ul>
+      <Button
+        className="bg-slate-400"
+        onClick={() => {
+          showToastSuccess("alo");
+        }}
+      >
+        Click me
+      </Button>
     </div>
   );
 }
