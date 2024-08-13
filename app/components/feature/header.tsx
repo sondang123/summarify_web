@@ -3,12 +3,34 @@ import { menuHeader } from "~/const/app-data";
 import { logo } from "~/const/app-resource";
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
+import { useEffect, useState } from "react";
 
 export const Header: React.FC = () => {
   const location = useLocation();
+  const [isSticky, setIsSticky] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    function handleScroll() {
+      if (window.scrollY > 0) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    }
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   return (
-    <div className="fixed top-0 left-0 right-0">
+    <div
+      className={cn(
+        "fixed top-0 left-0 right-0 z-40",
+        isSticky ? "shadow-lg duration-200 ease-in bg-main-background" : ""
+      )}
+    >
       <div className="container py-6">
         <div className="flex items-center justify-between">
           <Link

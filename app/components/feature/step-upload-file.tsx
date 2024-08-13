@@ -28,7 +28,7 @@ export const StepUploadFile: React.FC<IProps> = ({ setStepUpload }) => {
       </div>
       <div className="mx-auto text-center mt-15">
         <Button
-          className="mx-auto text-center rounded-[30px] bg-gradient-to-r from-[#5F1BFE] to-[#8B66E1] hover:opacity-80 "
+          className="mx-auto text-center rounded-[30px] bg-gradient-to-r from-[#5F1BFE] to-[#8B66E1] hover:opacity-80"
           onClick={() => {
             setStepUpload("SUMMARY");
           }}

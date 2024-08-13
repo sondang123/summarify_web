@@ -1,6 +1,8 @@
 import { InputSearch } from "~/components/app-components/input-search";
 import { UploadFile } from "~/components/app-components/upload-file";
 import { Button } from "~/components/ui/button";
+import { PreviewUpload } from "./summary/preview-upload";
+import { SummaryContent } from "./summary/summary-content";
 
 interface IProps {
   stepUpload: string;
@@ -10,7 +12,7 @@ export const StepSummary: React.FC<IProps> = ({ setStepUpload }) => {
   return (
     <div>
       <InputSearch />
-      <UploadFile
+      {/* <UploadFile
         onChange={() => {}}
         subtileSupport={
           <div className="text-center">
@@ -19,10 +21,10 @@ export const StepSummary: React.FC<IProps> = ({ setStepUpload }) => {
             video size: 500 MB Max video length: 2 hours
           </div>
         }
-      />
+      /> */}
       <div className="flex items-center justify-center mt-15 gap-6">
         <Button
-          className="rounded-[30px] hover:opacity-80 border-main-primary text-main-primary"
+          className="rounded-[30px] hover:text-main-primary hover:opacity-80 border-main-primary text-main-primary"
           variant="outline"
           onClick={() => {
             setStepUpload("UPLOAD");
@@ -49,6 +51,14 @@ export const StepSummary: React.FC<IProps> = ({ setStepUpload }) => {
         >
           Generate Summary
         </Button>
+      </div>
+      <div className="grid grid-cols-12 gap-6 mt-10">
+        <div className="col-span-4">
+          <PreviewUpload />
+        </div>
+        <div className="col-span-6">
+          <SummaryContent />
+        </div>
       </div>
     </div>
   );

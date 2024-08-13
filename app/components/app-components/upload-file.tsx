@@ -17,7 +17,7 @@ export const UploadFile: React.FC<IProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div
-      className="border border-dashed border-main-primary bg-main-background rounded-2 p-6 flex items-center justify-center flex-col relative"
+      className="border border-dashed border-main-primary bg-main-background rounded-2 p-6 flex items-center justify-center flex-col relative hover:opacity-80"
       style={{
         strokeDasharray: 12,
       }}

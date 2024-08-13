@@ -1,20 +1,22 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useState } from "react";
+
 import { StepSummary } from "~/components/feature/step-summary";
 import { StepUploadFile } from "~/components/feature/step-upload-file";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Summarify" },
+    { name: "description", content: "Summarize videos & create quiz!" },
   ];
 };
 
 export default function Index() {
   const [stepUpload, setStepUpload] = useState("UPLOAD");
+
   return (
     <div className="min-h-lvh bg-[url('assets/images/bg-home.png')] bg-no-repeat bg-cover bg-center">
-      <div className="container pt-32 pb-10">
+      <div className="container pt-35 pb-32">
         <p className="typo-s48-w800 text-center text-main-secondary_1">
           Summarize videos & create quiz
         </p>
