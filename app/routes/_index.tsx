@@ -1,48 +1,34 @@
-import type { MetaFunction } from "@remix-run/node";
+import { FrequentlyAskedQuestion } from '@/components/feature/frequently-asked-question'
+import { HowItWorks } from '@/components/feature/how-it-work'
+import { InputSummary } from '@/components/feature/input-summary'
+import { SummaryDemo } from '@/components/feature/summary_demo/section_summary_demo'
+import { VideoSummaries } from '@/components/feature/video-summaries'
+import { useEffect } from 'react'
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
-
-export default function Index() {
+const HomePage = () => {
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }, [])
   return (
-    <div className="font-sans p-4">
-      <h1 className="text-3xl">Welcome to Remix</h1>
-      <ul className="list-disc mt-4 pl-6 space-y-2">
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/quickstart"
-            rel="noreferrer"
-          >
-            5m Quick Start
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/tutorial"
-            rel="noreferrer"
-          >
-            30m Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/docs"
-            rel="noreferrer"
-          >
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
-  );
+    <main className="flex min-h-screen flex-col items-center justify-between bg-main-background  bg-contain bg-top bg-no-repeat pt-28 bg-[url('./assets/images/bg-home.svg')]">
+      <div className="container">
+        <p className="typo-s48-w800 text-center text-neutral-0">
+          Summarize videos & create quiz
+        </p>
+        <p className="typo-s18-w500 text-center text-neutral-1">
+          Take notes from YouTube videos and other supported File easily.
+        </p>
+        <InputSummary />
+        {/* <SummaryDemo /> */}
+        <VideoSummaries />
+        <HowItWorks />
+        <FrequentlyAskedQuestion />
+      </div>
+    </main>
+  )
 }
+
+export default HomePage
