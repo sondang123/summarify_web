@@ -26,6 +26,7 @@ import {
   GET_TRANSCRIPT_YOUTUBE_URL,
 } from '@/query/summary/queryKeys'
 
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { useIsMutatingSummary } from '@/hooks/use-is-mutating'
 import { Transcript } from '../summary_demo/transcript'
 import { RecentQuiz } from './recent-quiz'
@@ -196,9 +197,11 @@ export const TabsSummary = React.memo(() => {
               <AppLoading />
             </div>
           ) : (
-            <p className="typo-s16-w400 mt-4 text-neutral-1">
-              {active_recent?.summarize}
-            </p>
+            <ScrollArea className="h-[60vh]">
+              <p className="typo-s16-w400 mt-4 text-neutral-1">
+                {active_recent?.summarize}
+              </p>
+            </ScrollArea>
           )}
         </TabsContent>
         <TabsContent

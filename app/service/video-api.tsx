@@ -2,7 +2,7 @@ import { serviceApi } from './service-api'
 
 export async function summarizeFile({ formData }: { formData: FormData }) {
   try {
-    const json = await serviceApi('video/summarize', {
+    const json = await serviceApi('web/video/summarize', {
       method: 'POST',
       body: formData,
     })
@@ -16,7 +16,7 @@ export async function summarizeFile({ formData }: { formData: FormData }) {
 }
 export async function transcriptFile({ formData }: { formData: FormData }) {
   try {
-    const json = await serviceApi('video/transcript', {
+    const json = await serviceApi('web/video/transcript', {
       method: 'POST',
       body: formData,
     })
@@ -30,7 +30,7 @@ export async function transcriptFile({ formData }: { formData: FormData }) {
 }
 export async function mindMapFile({ formData }: { formData: FormData }) {
   try {
-    const json = await serviceApi('video/mindmap', {
+    const json = await serviceApi('web/video/mindmap', {
       method: 'POST',
       body: formData,
     })

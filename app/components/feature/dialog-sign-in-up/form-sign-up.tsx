@@ -9,6 +9,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { validationRules } from '@/const/form-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
+
+import { GlobalIndicator } from '@/components/app-components/loading-indicator'
+import { showToastError } from '@/helper/toast'
+import { useSignUp } from '@/query/auth/signup'
+import { useNavigate } from '@remix-run/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { PasswordInput } from '../../app-components/password-input'
@@ -38,21 +43,40 @@ const formSchema = z
 
 interface FormSignUpProps {
   onClickChangeSignIn: (event: React.MouseEvent<HTMLButtonElement>) => void
+  onClose: () => void
 }
 
 export const FormSignUp: React.FC<FormSignUpProps> = ({
   onClickChangeSignIn,
+  onClose,
 }) => {
+  const signUpMutation = useSignUp()
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: '',
     },
   })
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { username, email, password } = values
+    GlobalIndicator.show()
+    const res = await signUpMutation.mutateAsync({
+      username,
+      email,
+      password,
+    })
+    if (res?.error) {
+      showToastError(res?.error)
+      GlobalIndicator.hide()
+      return
+    }
+    if (res?.data) {
+      navigate('/')
+      form.reset()
+      onClose()
+    }
+    GlobalIndicator.hide()
   }
 
   return (

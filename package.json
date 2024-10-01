@@ -66,9 +66,5 @@
   "resolutions": {
     "@types/react": "^18.0.8"
   },
-  "trustedDependencies": [
-    "@biomejs/biome",
-    "esbuild",
-    "workerd"
-  ]
+  "trustedDependencies": ["@biomejs/biome", "esbuild", "workerd"]
 }
