@@ -75,3 +75,7 @@ export const formatTime = (seconds: number): string => {
   }
   return [mins, secs].map((v) => v.toString().padStart(2, '0')).join(':')
 }
+export const timeToSeconds = (time: string): number => {
+  const [hours, minutes, seconds] = time.split(':').map(Number)
+  return hours * 3600 + minutes * 60 + seconds
+}

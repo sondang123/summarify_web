@@ -46,7 +46,7 @@ export default function Sidebar({ className }: SidebarProps) {
         <div className="px-4">
           <div
             className={cn(
-              'flex items-center py-5.5',
+              'flex items-center py-6',
               isMinimized ? 'justify-center' : 'justify-between',
             )}
           >

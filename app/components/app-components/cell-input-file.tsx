@@ -1,25 +1,25 @@
-import React from "react";
-import { AppConfirmDelete } from "@/components/app-components/dialog-confirm-delete";
+import { AppConfirmDelete } from '@/components/app-components/dialog-confirm-delete'
+import type React from 'react'
 
-import { returnFileSize } from "@/utils";
-import { Progress } from "@/components/ui/progress";
-import { StatusUpload } from "@/types/cell-input-file";
+import { Progress } from '@/components/ui/progress'
+import type { StatusUpload } from '@/types/cell-input-file'
+import { returnFileSize } from '@/utils'
 
 interface CellUpLoadedFileProps {
-  showIconDelete?: boolean;
-  onDelete?: () => void;
-  isLoading?: boolean;
-  name?: string;
-  size?: Number;
-  status?: StatusUpload;
-  progress?: Number;
+  showIconDelete?: boolean
+  onDelete?: () => void
+  isLoading?: boolean
+  name?: string
+  size?: number
+  status?: StatusUpload
+  progress?: number
 }
 
 export const CellUpLoadedFile: React.FC<CellUpLoadedFileProps> = ({
   showIconDelete = true,
   onDelete = () => {},
   isLoading = false,
-  name = "",
+  name = '',
   size,
   status,
   progress = 0,
@@ -47,7 +47,7 @@ export const CellUpLoadedFile: React.FC<CellUpLoadedFileProps> = ({
             </p>
             {isLoading ? (
               <Progress value={Number(progress)} className="h-2" />
-            ) : status === "SUCCESS" ? (
+            ) : status === 'SUCCESS' ? (
               <p className="typo-s14-w400 text-main-success">Upload success</p>
             ) : (
               <p className="typo-s14-w400 text-main-error">Upload failed</p>
@@ -74,5 +74,5 @@ export const CellUpLoadedFile: React.FC<CellUpLoadedFileProps> = ({
         </AppConfirmDelete>
       ) : null}
     </div>
-  );
-};
+  )
+}

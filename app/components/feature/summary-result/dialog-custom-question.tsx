@@ -20,11 +20,16 @@ import { DialogClose } from '@radix-ui/react-dialog'
 
 import { GlobalIndicator } from '@/components/app-components/loading-indicator'
 
+import { useGetQuiz } from '@/query/quiz/create-quiz'
+import useSummaryResultStore from '@/store/summary-result-store'
+import { formatDuration, getYoutubeId } from '@/utils'
 import { useNavigate } from '@remix-run/react'
 import type React from 'react'
-import { useForm } from 'react-hook-form'
+import { useMemo } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 import TimeInput from '../../app-components/time-input'
+import { PreviewUpload } from '../summary_demo/upload-preview'
 
 interface IDialogCustomQuestion {
   children?: React.ReactNode | string
@@ -67,24 +72,63 @@ export const DialogCustomQuestion: React.FC<IDialogCustomQuestion> = ({
   onOpenChange = () => {},
 }) => {
   const navigate = useNavigate()
+  const createQuiz = useGetQuiz()
+  const { addQuiz, active_recent } = useSummaryResultStore()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       topic: '',
-      numberOfQuestion: '',
-      time: '',
+      numberOfQuestion: '5',
+      time: '00:05:00',
     },
   })
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     GlobalIndicator.show()
-    setTimeout(() => {
+    const numQuiz = values?.numberOfQuestion ?? 5
+    const time = values?.time === '00:00:00' ? '00:05:00' : values?.time
+    const data = await createQuiz.mutateAsync({
+      caption: active_recent?.transcript?.text ?? '',
+      translate: `${numQuiz} quiz in ${time} topics ${values?.topic}`,
+    })
+    if (data?.data?.quiz) {
+      addQuiz({
+        data: {
+          contentQuiz: data?.data,
+        },
+        id: active_recent?.id ?? '',
+      })
       navigate('/quiz')
-      GlobalIndicator.hide()
-    }, 2000)
+    }
+    GlobalIndicator.hide()
   }
+
+  const videoPlayer = useMemo(() => {
+    if (!active_recent?.fileVideo) return null
+
+    return (
+      <div>
+        <video
+          src={URL.createObjectURL(active_recent.fileVideo)}
+          controls
+          className="w-full rounded-lg aspect-[21/9]"
+        >
+          <track kind="captions" src="" label="English" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    )
+  }, [active_recent?.fileVideo])
+  const numberOfQuestions = useWatch({
+    control: form.control,
+    name: 'numberOfQuestion',
+    defaultValue: '5',
+  })
+  const timeQuestion = useWatch({
+    control: form.control,
+    name: 'time',
+    defaultValue: '00:05:00',
+  })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -95,8 +139,8 @@ export const DialogCustomQuestion: React.FC<IDialogCustomQuestion> = ({
       >
         <DialogHeader>
           <DialogTitle className="typo-s24-w700 text-center leading-6 text-neutral-0">
-            VẤN ĐỀ LY KHAI VÀ THÀNH LẬP QUỐC GIA MỚI Ở INDONESIA - NẾU THÀNH
-            CÔNG SẼ CÓ BAO NHIÊU QUỐC GIA
+            {active_recent?.transcript?.info?.title ||
+              active_recent?.fileVideo?.name}
           </DialogTitle>
           <p className="typo-s16-w400 pt-4 text-center text-neutral-1">
             This quiz will test your knowledge of key facts and details in the
@@ -152,6 +196,7 @@ export const DialogCustomQuestion: React.FC<IDialogCustomQuestion> = ({
                           {...field}
                           value={field.value ?? ''}
                           className="h-12 rounded-[30px] border-neutral-2 px-4 pl-12"
+                          type="number"
                         />
                       </div>
                     </FormControl>
@@ -192,9 +237,9 @@ export const DialogCustomQuestion: React.FC<IDialogCustomQuestion> = ({
                   />
                 </svg>
                 <div>
-                  <p className="typo-s16-w600 text-neutral-0">0/5 questions</p>
-                  <p className="typo-s14-w400 text-neutral-1">
-                    Lorem ipsum dolor sit amet consectetur.
+                  <p className="typo-s16-w600 text-neutral-0">
+                    {numberOfQuestions || 5}
+                    <span> questions</span>
                   </p>
                 </div>
               </div>
@@ -215,31 +260,34 @@ export const DialogCustomQuestion: React.FC<IDialogCustomQuestion> = ({
                   />
                 </svg>
                 <div>
-                  <p className="typo-s16-w600 text-neutral-0">0 minutes</p>
-                  <p className="typo-s14-w400 text-neutral-1">
-                    Lorem ipsum dolor sit amet consectetur.
+                  <p className="typo-s16-w600 text-neutral-0">
+                    {timeQuestion === '00:00:00' ? '00:05:00 ' : timeQuestion}
+                    <span> minutes</span>
                   </p>
                 </div>
               </div>
             </div>
             <p className="typo-s16-w500 text-neutral-0">Video</p>
             <div className="flex gap-4">
-              <iframe
-                src="https://www.youtube.com/embed/mP8IOfuXKbY?si=eYVhn80TB4Yl36Tg"
-                title="YouTube video player"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="aspect-video w-50 rounded [&>*]:w-2"
-              ></iframe>
+              {active_recent?.fileVideo ? (
+                videoPlayer
+              ) : (
+                <PreviewUpload
+                  title={''}
+                  description={''}
+                  duration={0}
+                  channel={''}
+                  idYoutube={getYoutubeId(active_recent?.video ?? '')}
+                />
+              )}
 
               <div>
                 <p className="typo-s16-w600 text-neutral-0">
-                  VẤN ĐỀ LY KHAI VÀ THÀNH LẬP QUỐC GIA MỚI Ở INDONESIA - NẾU
-                  THÀNH CÔNG SẼ CÓ BAO NHIÊU QUỐC GIA
+                  {active_recent?.transcript?.info?.title ??
+                    active_recent?.fileVideo?.name}
                 </p>
                 <p className="typo-s14-w400 pt-1 text-neutral-1">
-                  T&T Tutorials
+                  {active_recent?.transcript?.info?.channelName ?? ''}
                 </p>
               </div>
             </div>

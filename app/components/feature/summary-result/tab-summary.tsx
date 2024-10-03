@@ -5,29 +5,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import useMindmapToFlow from '@/hooks/use-horizontal-flow'
 
 import useSummaryResultStore from '@/store/summary-result-store'
 import type { ISegments } from '@/types/store/summary-result'
 import { formatTime } from '@/utils'
 import { Tooltip } from '@radix-ui/react-tooltip'
-import { useIsMutating } from '@tanstack/react-query'
+
 import React, { type MouseEvent, useCallback, useRef, useState } from 'react'
-
-import type { HorizontalFlowRef } from '../horizontal-flow'
-import HorizontalFlow from '../horizontal-flow'
-
-import {
-  GET_MIND_MAP_FILE,
-  GET_MIND_MAP_YOUTUBE_URL,
-  GET_SUMMARIZE_FILE,
-  GET_SUMMARIZE_YOUTUBE_URL,
-  GET_TRANSCRIPT_FILE,
-  GET_TRANSCRIPT_YOUTUBE_URL,
-} from '@/query/summary/queryKeys'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useIsMutatingSummary } from '@/hooks/use-is-mutating'
+
+import { useMindMapTransform } from '@/hooks/use-mind-map'
+import type { MindmapRef } from '../mind-map'
+import Mindmap from '../mind-map'
 import { Transcript } from '../summary_demo/transcript'
 import { RecentQuiz } from './recent-quiz'
 
@@ -117,14 +108,14 @@ export const TabsSummary = React.memo(() => {
     [showTooltip],
   )
 
-  const mindmapRef = useRef<HorizontalFlowRef>(null)
+  const mindmapRef = useRef<MindmapRef>(null)
   const handleDownload = useCallback(() => {
     if (mindmapRef.current) {
       mindmapRef.current.downloadImage()
     }
   }, [])
 
-  const { initialNodes, initialEdges } = useMindmapToFlow(
+  const { nodes: initialNodes, edges: initialEdges } = useMindMapTransform(
     active_recent?.mindMap ?? [],
   )
 
@@ -289,7 +280,7 @@ export const TabsSummary = React.memo(() => {
               <AppLoading />
             </div>
           ) : (
-            <HorizontalFlow
+            <Mindmap
               ref={mindmapRef}
               initialNodes={initialNodes}
               initialEdges={initialEdges}

@@ -21,23 +21,29 @@ export default function SummaryScreen() {
   })
 
   const videoPlayer = useMemo(() => {
-    if (!active_recent?.fileVideo) return null
+    if (active_recent?.fileVideo && active_recent.fileVideo instanceof Blob) {
+      return (
+        <div>
+          <video
+            src={URL.createObjectURL(active_recent.fileVideo) ?? ''}
+            controls
+            className="w-full rounded-lg"
+          >
+            <track kind="captions" src="" label="English" />
+            Your browser does not support the video tag.
+          </video>
 
+          <p className="typo-s16-w600 break-words pt-4 text-neutral-0">
+            {active_recent.fileVideo.name}
+          </p>
+        </div>
+      )
+    }
     return (
-      <div>
-        <video
-          src={URL.createObjectURL(active_recent.fileVideo)}
-          controls
-          className="w-full rounded-lg"
-        >
-          <track kind="captions" src="" label="English" />
-          Your browser does not support the video tag.
-        </video>
-
-        <p className="typo-s16-w600 break-words pt-4 text-neutral-0">
-          {active_recent.fileVideo.name}
-        </p>
-      </div>
+      <video controls className="w-full rounded-lg">
+        <track kind="captions" src="" label="English" />
+        Your browser does not support the video tag.
+      </video>
     )
   }, [active_recent?.fileVideo])
 

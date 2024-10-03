@@ -1,13 +1,12 @@
+import type { LinksFunction } from '@remix-run/cloudflare'
+
 import {
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
 } from '@remix-run/react'
-
-import type { LinksFunction } from '@remix-run/cloudflare'
 import { AppToast } from './components/app-components/app-toast'
 import LoadingIndicator from './components/app-components/loading-indicator'
 import DefaultLayout from './layout/default-layout'
@@ -39,15 +38,8 @@ export const links: LinksFunction = () => {
     },
   ]
 }
-export const loader = () => {
-  return {
-    ENV: {
-      BASE_URL_API: process.env.BASE_URL_API,
-    },
-  }
-}
+
 export function Layout({ children }: { children: React.ReactNode }) {
-  const data = useLoaderData<typeof loader>()
   return (
     <html lang="en">
       <head>
@@ -56,24 +48,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="font-manrope ">
-        <QueryProvider>
-          <DefaultLayout>{children}</DefaultLayout>
-        </QueryProvider>
+      <body className="font-manrope">
+        {children}
         <ScrollRestoration />
         <Scripts />
         <AppToast />
         <LoadingIndicator />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(data.ENV)}`,
-          }}
-        />
       </body>
     </html>
   )
 }
 
 export default function App() {
-  return <Outlet />
+  return (
+    <QueryProvider>
+      <Layout>
+        <DefaultLayout>
+          <Outlet />
+        </DefaultLayout>
+      </Layout>
+    </QueryProvider>
+  )
 }

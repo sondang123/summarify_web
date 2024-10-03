@@ -9,7 +9,10 @@ import type React from 'react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
+import useSummaryResultStore from '@/store/summary-result-store'
 import { Link } from '@remix-run/react'
+
+import { useMemo } from 'react'
 
 interface IDialogScoreProps {
   children?: React.ReactNode | string
@@ -24,6 +27,29 @@ export const DialogScore: React.FC<IDialogScoreProps> = ({
   onOpenChange = () => {},
   onPlayAgain,
 }) => {
+  const { active_recent } = useSummaryResultStore()
+
+  const matchingAnswersCount = useMemo(() => {
+    if (!active_recent?.contentQuiz?.quiz || !active_recent?.answer) {
+      return 0
+    }
+
+    return active_recent.contentQuiz.quiz.reduce((count, question, index) => {
+      const matchingAnswer = active_recent?.answer?.find(
+        (item) => Number(item.key) === Number(index + 1),
+      )
+
+      if (
+        matchingAnswer &&
+        Number(matchingAnswer.value) === Number(question.keyAnswer)
+      ) {
+        return count + 1
+      }
+
+      return count
+    }, 0)
+  }, [active_recent])
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -36,29 +62,32 @@ export const DialogScore: React.FC<IDialogScoreProps> = ({
           <p className="typo-s20-w600 text-white">
             Congratulation! You completed!
           </p>
-          <p className="typo-s28-w600 text-white">Your Score : 4/5</p>
+          <p className="typo-s28-w600 text-white">
+            Your Score : {matchingAnswersCount ?? 0}/
+            {active_recent?.contentQuiz?.quiz?.length ?? 0}
+          </p>
         </div>
         <ScrollArea className="max-h-[60lvh]">
           <div className="bg-neutral-3 rounded-3 border border-neutral-2 p-4 text-center">
             <p className="typo-s16-w600 text-neutral-0">My Answer</p>
             <div className="mt-4 flex flex-wrap justify-center gap-4">
-              <div
-                className={cn(
-                  'typo-s16-w600 flex size-13 items-center justify-center rounded-2.5',
-                  'bg-main-success text-white',
-                )}
-              >
-                1
-              </div>
-
-              <div
-                className={cn(
-                  'typo-s16-w600 flex size-13 items-center justify-center rounded-2.5',
-                  'bg-main-error text-white',
-                )}
-              >
-                2
-              </div>
+              {active_recent?.contentQuiz?.quiz?.map((item, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    'typo-s16-w600 flex size-13 items-center justify-center rounded-2.5',
+                    Number(
+                      active_recent?.answer?.find(
+                        (i) => Number(i?.key) === Number(index + 1),
+                      )?.value,
+                    ) === Number(item?.keyAnswer)
+                      ? 'bg-main-success text-white'
+                      : 'bg-main-error text-white',
+                  )}
+                >
+                  {index + 1}
+                </div>
+              ))}
             </div>
 
             <p className="typo-s14-w600 mt-5 cursor-pointer text-main-primary hover:opacity-80">
@@ -79,7 +108,9 @@ export const DialogScore: React.FC<IDialogScoreProps> = ({
                   fill="#56C490"
                 />
               </svg>
-              <p className="typo-s14-w600 pt-2 text-neutral-0">4 questions</p>
+              <p className="typo-s14-w600 pt-2 text-neutral-0">
+                {matchingAnswersCount} questions
+              </p>
               <p className="typo-s14-w400 pt-2 text-neutral-1">
                 Correct answer
               </p>
@@ -97,7 +128,11 @@ export const DialogScore: React.FC<IDialogScoreProps> = ({
                   fill="#FE5353"
                 />
               </svg>
-              <p className="typo-s14-w600 pt-2 text-neutral-0">4 questions</p>
+              <p className="typo-s14-w600 pt-2 text-neutral-0">
+                {(active_recent?.contentQuiz?.quiz?.length ?? 0) -
+                  matchingAnswersCount}
+                <span> questions</span>
+              </p>
               <p className="typo-s14-w400 pt-2 text-neutral-1">Incorrect</p>
             </div>
           </div>

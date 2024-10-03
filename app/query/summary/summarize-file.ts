@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { mindMapFile, summarizeFile, transcriptFile } from '@/service/video-api'
+import { routerApi } from '@/service-api/router-api'
+
 import useSummaryResultStore from '@/store/summary-result-store'
 import {
   GET_MIND_MAP_FILE,
@@ -13,7 +14,14 @@ export const useSummarizeFile = () => {
   return useMutation({
     mutationKey: [GET_SUMMARIZE_FILE],
     mutationFn: async ({ formData }: { formData: FormData }) => {
-      const data: any = await summarizeFile({ formData: formData })
+      const data = await routerApi('/api/summarize-video', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
       const { active_recent } = useSummaryResultStore.getState()
       if (active_recent?.id) {
         updateSummary({
@@ -32,7 +40,13 @@ export function useTranscriptFile() {
   return useMutation({
     mutationKey: [GET_TRANSCRIPT_FILE],
     mutationFn: async ({ formData }: { formData: FormData }) => {
-      const data: any = await transcriptFile({ formData: formData })
+      const data = await routerApi('/api/transcript-video', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       const { active_recent } = useSummaryResultStore.getState()
       if (active_recent?.id) {
         updateSummary({
@@ -52,7 +66,13 @@ export const useMindMapFile = () => {
   return useMutation({
     mutationKey: [GET_MIND_MAP_FILE],
     mutationFn: async ({ formData }: { formData: FormData }) => {
-      const data: any = await mindMapFile({ formData: formData })
+      const data: any = await routerApi('/api/mindmap-video', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       const { active_recent } = useSummaryResultStore.getState()
       if (active_recent?.id) {
         updateSummary({

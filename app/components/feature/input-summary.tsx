@@ -12,6 +12,7 @@ import {
 import useSummaryResultStore from '@/store/summary-result-store'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { useInfoMe } from '@/query/auth/info-me'
 import {
   useMindMapFile,
   useSummarizeFile,
@@ -19,8 +20,10 @@ import {
 } from '@/query/summary/summarize-file'
 import { getYoutubeId, uuidRandom } from '@/utils'
 import { useNavigate } from '@remix-run/react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { DialogSignInUp } from './dialog-sign-in-up/screen-sign-in'
 interface IInputSummaryProps {
   showExamples?: boolean
 }
@@ -47,8 +50,10 @@ const formSchema = z
 export const InputSummary: React.FC<IInputSummaryProps> = ({
   showExamples = true,
 }) => {
+  const [showDialogSignIn, setShowDialogSignIn] = useState<boolean>(false)
   const navigate = useNavigate()
   const { addSummary, addIdPending } = useSummaryResultStore()
+  const infoMe = useInfoMe()
 
   const transcriptFile = useTranscriptFile()
   const summarizeFile = useSummarizeFile()
@@ -66,40 +71,44 @@ export const InputSummary: React.FC<IInputSummaryProps> = ({
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const idRandom = uuidRandom()
-    if (values.file) {
-      addSummary({
-        data: {
-          id: idRandom,
-          title: values.file?.name ?? '',
-          fileVideo: values.file,
-        },
-      })
-      addIdPending({ id: idRandom })
-      const formData = new FormData()
-      formData.append('file', values.file)
+    if (!infoMe?.data?.data?.user) {
+      setShowDialogSignIn(true)
+    } else {
+      const idRandom = uuidRandom()
+      if (values.file) {
+        addSummary({
+          data: {
+            id: idRandom,
+            title: values.file?.name ?? '',
+            fileVideo: values.file,
+          },
+        })
+        addIdPending({ id: idRandom })
+        const formData = new FormData()
+        formData.append('file', values.file)
 
-      transcriptFile.mutate({ formData })
-      summarizeFile.mutate({ formData })
-      mindMapFile.mutate({ formData })
-    } else if (values.link) {
-      const youtubeId = getYoutubeId(values.link)
-      addSummary({
-        data: {
-          id: idRandom,
-          title: values.link,
-          video: values.link,
-        },
-      })
-      addIdPending({ id: idRandom })
+        transcriptFile.mutate({ formData })
+        summarizeFile.mutate({ formData })
+        mindMapFile.mutate({ formData })
+      } else if (values.link) {
+        const youtubeId = getYoutubeId(values.link)
+        addSummary({
+          data: {
+            id: idRandom,
+            title: values.link,
+            video: values.link,
+          },
+        })
+        addIdPending({ id: idRandom })
 
-      transcriptLinkMutation.mutate({ youtubeId })
-      summarizeLinkMutation.mutate({ youtubeId })
-      mindMapLinkMutation.mutate({ youtubeId })
+        transcriptLinkMutation.mutate({ youtubeId })
+        summarizeLinkMutation.mutate({ youtubeId })
+        mindMapLinkMutation.mutate({ youtubeId })
+      }
+      navigate('/summary')
+      // Reset form
+      form.reset()
     }
-    navigate('/summary')
-    // Reset form
-    form.reset()
   }
 
   return (
@@ -220,6 +229,11 @@ export const InputSummary: React.FC<IInputSummaryProps> = ({
           </p>
         </div>
       ) : null}
+
+      <DialogSignInUp
+        onOpenChange={setShowDialogSignIn}
+        open={showDialogSignIn}
+      />
     </div>
   )
 }

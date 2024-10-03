@@ -1,15 +1,35 @@
 import { avatarDemo } from '@/const/app-resource'
 import { TypeSignIn } from '@/types/sign-in'
 
+import { useState } from 'react'
+
+import { useInfoMe } from '@/query/auth/info-me'
+
+import { logoutAccount } from '@/helper/user'
 import { Button } from '../ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { Skeleton } from '../ui/skeleton'
 import { DialogSignInUp } from './dialog-sign-in-up/screen-sign-in'
 
 export const AccountHeader = () => {
-  const isLogin = true
+  const [showSignIn, setShowSignIn] = useState<boolean>(false)
+  const [showSignUp, setShowSignUp] = useState<boolean>(false)
+  const infoMe = useInfoMe()
+
+  if (infoMe?.isLoading) {
+    return (
+      <div className="flex">
+        <Skeleton className="size-10 rounded-full me-2" />
+        <div>
+          <Skeleton className="h-5 w-[200px]" />
+          <Skeleton className="h-5 w-[200px] mt-2" />
+        </div>
+      </div>
+    )
+  }
   return (
     <div>
-      {isLogin ? (
+      {infoMe?.data?.data?.user ? (
         <div>
           <Popover>
             <PopoverTrigger>
@@ -27,10 +47,10 @@ export const AccountHeader = () => {
                 <div className="min-w-[160px] max-w-[250px]">
                   <div className="me-3">
                     <p className="typo-s16-w600 mr-2 break-words text-neutral-800 text-left line-clamp-2">
-                      Sơn Đặng
+                      {infoMe?.data?.data?.user?.username ?? ''}
                     </p>
                     <p className="typo-s14-w400 text-neutral-500 line-clamp-1 break-words text-left">
-                      sondang2kk@gmail.com
+                      {infoMe?.data?.data?.user?.email ?? ''}
                     </p>
                   </div>
                 </div>
@@ -70,7 +90,12 @@ export const AccountHeader = () => {
                   <p className="typo-s16-w500 ml-2 text-neutral-0">History</p>
                 </div>
 
-                <div className="mt-3 flex cursor-pointer px-3 py-2 hover:opacity-80">
+                <div
+                  className="mt-3 flex cursor-pointer px-3 py-2 hover:opacity-80"
+                  onClick={() => {
+                    logoutAccount()
+                  }}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -92,12 +117,16 @@ export const AccountHeader = () => {
         </div>
       ) : (
         <div>
-          <DialogSignInUp>
+          <DialogSignInUp open={showSignIn} onOpenChange={setShowSignIn}>
             <Button className="rounded-[30px] bg-transparent text-neutral-0 hover:bg-transparent hover:opacity-80">
               Sign in
             </Button>
           </DialogSignInUp>
-          <DialogSignInUp type={TypeSignIn.SIGN_UP}>
+          <DialogSignInUp
+            open={showSignUp}
+            type={TypeSignIn.SIGN_UP}
+            onOpenChange={setShowSignUp}
+          >
             <Button className="typo-s16-w600 rounded-[30px] bg-gradient-to-r from-[#5F1BFE] to-[#8B66E1] text-main-light_primary hover:opacity-80">
               Sign up
             </Button>

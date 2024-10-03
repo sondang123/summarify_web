@@ -1,10 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 
-import {
-  mindMapLink,
-  summarizeLink,
-  transcriptLink,
-} from '@/service/youtube-api'
+import { routerApi } from '@/service-api/router-api'
+
 import useSummaryResultStore from '@/store/summary-result-store'
 import {
   GET_MIND_MAP_YOUTUBE_URL,
@@ -17,7 +14,12 @@ export const useSummarizeLinkYoutube = () => {
   return useMutation({
     mutationKey: [GET_SUMMARIZE_YOUTUBE_URL],
     mutationFn: async ({ youtubeId }: { youtubeId: string }) => {
-      const data: any = await summarizeLink({ youtubeId })
+      const data = await routerApi('/api/summarize-link', {
+        method: 'POST',
+        body: JSON.stringify({
+          youtubeId,
+        }),
+      })
       const { active_recent } = useSummaryResultStore.getState()
       if (active_recent?.id) {
         updateSummary({
@@ -36,7 +38,12 @@ export function useTranscriptLinkMutation() {
   return useMutation({
     mutationKey: [GET_TRANSCRIPT_YOUTUBE_URL],
     mutationFn: async ({ youtubeId }: { youtubeId: string }) => {
-      const data: any = await transcriptLink({ youtubeId })
+      const data = await routerApi('/api/transcript-link', {
+        method: 'POST',
+        body: JSON.stringify({
+          youtubeId,
+        }),
+      })
       const { active_recent } = useSummaryResultStore.getState()
       if (active_recent?.id) {
         updateSummary({
@@ -56,7 +63,12 @@ export const useMindMapLinkYoutube = () => {
   return useMutation({
     mutationKey: [GET_MIND_MAP_YOUTUBE_URL],
     mutationFn: async ({ youtubeId }: { youtubeId: string }) => {
-      const data: any = await mindMapLink({ youtubeId })
+      const data: any = await routerApi('/api/mind-map-link', {
+        method: 'POST',
+        body: JSON.stringify({
+          youtubeId,
+        }),
+      })
       const { active_recent } = useSummaryResultStore.getState()
       if (active_recent?.id) {
         updateSummary({
