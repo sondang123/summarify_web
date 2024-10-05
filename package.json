@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
-    "dev": "remix vite:dev"
+    "dev": "remix vite:dev",
+    "start": "wrangler pages dev ./build/client"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -64,9 +65,5 @@
   "resolutions": {
     "@types/react": "^18.0.8"
   },
-  "trustedDependencies": [
-    "@biomejs/biome",
-    "esbuild",
-    "workerd"
-  ]
+  "trustedDependencies": ["@biomejs/biome", "esbuild", "workerd"]
 }
