@@ -20,10 +20,12 @@ import 'reactflow/dist/style.css'
 export interface MindmapRef {
   downloadImage: () => void
 }
+
 interface MindmapContentProps {
   initialNodes: Node[]
   initialEdges: Edge[]
 }
+
 const MindmapContent = forwardRef<MindmapRef, MindmapContentProps>(
   ({ initialNodes, initialEdges }, ref) => {
     const [nodes] = useNodesState<Node>(initialNodes)

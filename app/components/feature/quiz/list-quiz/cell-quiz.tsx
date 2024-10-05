@@ -2,10 +2,9 @@ interface QuestionRadioGroupProps {
   id: string
   question: string
   options: string[]
-  onSelect: (value: number) => void
+  onSelect: (value: string) => void
   questionNumber: number // Thêm prop questionNumber
   totalQuestions: number // Thêm prop totalQuestions
-  defaultCheckedIndex: number // Add this new prop
 }
 
 import { Label } from '@/components/ui/label'
@@ -18,7 +17,6 @@ export const CellQuiz: React.FC<QuestionRadioGroupProps> = ({
   onSelect,
   questionNumber,
   totalQuestions,
-  defaultCheckedIndex,
 }) => {
   return (
     <div className="rounded-4 bg-white p-8">
@@ -27,16 +25,7 @@ export const CellQuiz: React.FC<QuestionRadioGroupProps> = ({
       </p>
       <p className="typo-s20-w600 pt-2 text-neutral-0">{question}</p>
       <div className="mt-6">
-        <RadioGroup
-          onValueChange={(value) => {
-            const selectedIndex = options.findIndex(
-              (option) => option === value,
-            )
-            onSelect(selectedIndex)
-          }}
-          className="flex flex-col gap-4"
-          defaultValue={options[defaultCheckedIndex]}
-        >
+        <RadioGroup onValueChange={onSelect} className="flex flex-col gap-4">
           {options.map((option, index) => (
             <div key={`${id}-option-${index}`} className="peer">
               <Label

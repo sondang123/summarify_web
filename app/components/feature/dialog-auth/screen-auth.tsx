@@ -1,14 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
-import type React from 'react'
-import { useEffect, useMemo, useState } from 'react'
-
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { bannerLogin, logo } from '@/const/app-resource'
+import { env } from '@/helper/get-env'
 import { TypeSignIn } from '@/types/sign-in'
-
-import { BASE_URL_API } from '@/helper/get-env'
 import { Link } from '@remix-run/react'
+import type React from 'react'
+import { useEffect, useState } from 'react'
 import { FormSignIn } from './form-sign-in'
 import { FormSignUp } from './form-sign-up'
 
@@ -23,7 +21,7 @@ export const DialogSignInUp: React.FC<DialogSignInUpProps> = ({
   children,
   open,
   onOpenChange = () => {},
-  type = TypeSignIn.SIGN_IN,
+  type = TypeSignIn.signIn,
 }) => {
   const [dialogSignInUp, setDialogSignInUp] = useState(type)
   useEffect(() => {
@@ -50,7 +48,7 @@ export const DialogSignInUp: React.FC<DialogSignInUpProps> = ({
             <div className="text-center">
               <img src={logo} alt="summarify" className="mx-auto mb-6" />
               <p className="typo-s24-w700 text-neutral-0">
-                {dialogSignInUp === TypeSignIn.SIGN_IN
+                {dialogSignInUp === TypeSignIn.signIn
                   ? 'Sign in to Summarify'
                   : 'Create a Summarify Account'}
               </p>
@@ -58,7 +56,7 @@ export const DialogSignInUp: React.FC<DialogSignInUpProps> = ({
                 Welcome Back to Summarify! <br /> Please sign in to get started
               </p>
 
-              <Link to={`${BASE_URL_API}/auth/google`}>
+              <Link to={`${env.baseUrlApi}/auth/google`}>
                 <Button
                   className="mt-6 rounded-[30px] w-full h-12 typo-s16-w400 text-neutral-1"
                   variant="outline"
@@ -98,10 +96,10 @@ export const DialogSignInUp: React.FC<DialogSignInUpProps> = ({
               <p className="typo-s14-w400 text-neutral-5">Or</p>
               <div className="flex-1 h-[1px] bg-neutral-2"></div>
             </div>
-            {dialogSignInUp === TypeSignIn.SIGN_IN ? (
+            {dialogSignInUp === TypeSignIn.signIn ? (
               <FormSignIn
                 onClickChangeSignUp={() => {
-                  setDialogSignInUp(TypeSignIn.SIGN_UP)
+                  setDialogSignInUp(TypeSignIn.signUp)
                 }}
                 onClose={() => {
                   onOpenChange(false)
@@ -110,7 +108,7 @@ export const DialogSignInUp: React.FC<DialogSignInUpProps> = ({
             ) : (
               <FormSignUp
                 onClickChangeSignIn={() => {
-                  setDialogSignInUp(TypeSignIn.SIGN_IN)
+                  setDialogSignInUp(TypeSignIn.signIn)
                 }}
                 onClose={() => {
                   onOpenChange(false)

@@ -17,9 +17,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     return json(result)
   } catch (error) {
-    return json(
-      { error: 'Đăng nhập thất bại. Vui lòng thử lại.' },
-      { status: 400 },
-    )
+    return json({ error: { error: 'Please try again!' } }, { status: 400 })
   }
 }

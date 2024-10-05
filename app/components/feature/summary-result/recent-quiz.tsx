@@ -1,9 +1,5 @@
-import { AppLoading } from '@/components/app-components/app-loading'
 import { AppConfirmDelete } from '@/components/app-components/dialog-confirm-delete'
 import { Button } from '@/components/ui/button'
-import { useIsMutatingSummary } from '@/hooks/use-is-mutating'
-import { cn } from '@/lib/utils'
-import useSummaryResultStore from '@/store/summary-result-store'
 import { DialogCustomQuestion } from './dialog-custom-question'
 import { EmptyQuiz } from './empty-quiz'
 
@@ -70,15 +66,6 @@ export const RecentQuiz: React.FC = () => {
     )
   }
   const isEmpty = true
-  const { isMutating, isMutatingFile } = useIsMutatingSummary()
-  const { active_recent } = useSummaryResultStore()
-  if (isMutating || isMutatingFile) {
-    return (
-      <div className="h-[60vh] flex items-center justify-center">
-        <AppLoading />
-      </div>
-    )
-  }
   return (
     <div>
       {isEmpty ? (
@@ -91,12 +78,7 @@ export const RecentQuiz: React.FC = () => {
       )}
 
       <DialogCustomQuestion>
-        <Button
-          className="typo-s14-w500 mx-auto mt-10 flex w-[40%] rounded-full bg-main-secondary_1 py-6 hover:bg-main-secondary_1 hover:bg-opacity-80"
-          disabled={
-            !!isMutating || !!isMutatingFile || !active_recent?.transcript?.text
-          }
-        >
+        <Button className="typo-s14-w500 mx-auto mt-10 flex w-[40%] rounded-full bg-main-secondary_1 py-6 hover:bg-main-secondary_1 hover:bg-opacity-80">
           {isEmpty ? 'Create Quiz' : 'Start Quiz'}
         </Button>
       </DialogCustomQuestion>

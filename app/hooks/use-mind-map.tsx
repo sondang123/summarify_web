@@ -1,6 +1,7 @@
 import type { IMindmapItem } from '@/types/store/summary-result'
 import { useMemo } from 'react'
 import { MarkerType, Position } from 'reactflow'
+
 interface Node {
   id: string
   data: { label: string }

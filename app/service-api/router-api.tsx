@@ -1,5 +1,5 @@
-import { getToken } from '@/helper/helper-token'
 import { showToastError } from '@/helper/toast'
+import { getToken } from '@/helper/token'
 
 export async function routerApi<T>(
   endpoint: string,

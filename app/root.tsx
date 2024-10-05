@@ -1,5 +1,3 @@
-import type { LinksFunction } from '@remix-run/cloudflare'
-
 import {
   Links,
   Meta,
@@ -7,12 +5,15 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
+
+import type { LinksFunction } from '@remix-run/cloudflare'
 import { AppToast } from './components/app-components/app-toast'
 import LoadingIndicator from './components/app-components/loading-indicator'
 import DefaultLayout from './layout/default-layout'
 import QueryProvider from './providers/query-provider'
 import tailwind from './tailwind.css?url'
 import 'react-toastify/dist/ReactToastify.css'
+
 export const links: LinksFunction = () => {
   return [
     { rel: 'stylesheet', href: tailwind },
@@ -38,7 +39,6 @@ export const links: LinksFunction = () => {
     },
   ]
 }
-
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -48,27 +48,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="font-manrope">
-        {children}
+      <body className="font-manrope ">
+        <QueryProvider>
+          <DefaultLayout>{children}</DefaultLayout>
+        </QueryProvider>
         <ScrollRestoration />
         <Scripts />
         <AppToast />
         <LoadingIndicator />
-
-        <Scripts />
       </body>
     </html>
   )
 }
 
 export default function App() {
-  return (
-    <QueryProvider>
-      <Layout>
-        <DefaultLayout>
-          <Outlet />
-        </DefaultLayout>
-      </Layout>
-    </QueryProvider>
-  )
+  return <Outlet />
 }

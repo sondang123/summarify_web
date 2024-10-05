@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { useEffect,  useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AppLoading } from './app-loading'
 
 let ActivityIndicatorRef: any
@@ -45,8 +45,10 @@ export default function LoadingIndicator({
 
   return (
     <div className={cn(isLoading ? 'block' : 'hidden')}>
-      <div className="fixed bottom-0 left-0 right-0 top-0 z-[99999999999] flex items-center justify-center bg-[#cccccc2f]">
-        <AppLoading />
+      <div className="fixed bottom-0 left-0 right-0 top-0 z-[99999999999] flex items-center justify-center backdrop-brightness-90">
+        <div className="fixed bottom-0 left-0 right-0 top-0 z-[99999999999] flex items-center justify-center bg-[#cccccc2f]">
+          <AppLoading />
+        </div>
       </div>
     </div>
   )

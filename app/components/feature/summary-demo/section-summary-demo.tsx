@@ -1,6 +1,5 @@
 import { formatDuration } from '@/utils'
 
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   fakeDataDemoHomeMindMap,
   fakeDataDemoHomeSummary,

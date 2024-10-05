@@ -1,14 +1,14 @@
-import { setToken } from '@/helper/helper-token'
+import { setToken } from '@/helper/token'
 
 import { routerApi } from '@/service-api/router-api'
 import type { SignUp } from '@/types/auth/signup'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { INFO_ME, SIGN_UP } from './queryKeys'
+import { infoMe, signUp } from './query-keys'
 
 export const useSignUp = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationKey: [SIGN_UP],
+    mutationKey: [signUp],
     mutationFn: async ({ password, email, username }: SignUp) => {
       const data = await routerApi('/api/sign-up', {
         method: 'POST',
@@ -20,7 +20,7 @@ export const useSignUp = () => {
     onSuccess: (data) => {
       if (data.data?.token) {
         setToken(data.data?.token)
-        queryClient.invalidateQueries({ queryKey: [INFO_ME] })
+        queryClient.invalidateQueries({ queryKey: [infoMe] })
       }
     },
   })

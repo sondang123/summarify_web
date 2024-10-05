@@ -1,4 +1,4 @@
-import { removeToken } from './helper-token'
+import { removeToken } from './token'
 
 export function logoutAccount() {
   removeToken()

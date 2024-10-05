@@ -2,6 +2,24 @@ import type { ISummaryResultState } from '@/types/store/summary-result'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
+const mergeAnswers = (
+  existingAnswers: { key: string; value: any }[],
+  newData: { [key: string]: any },
+): { key: string; value: any }[] => {
+  return Object.entries(newData).reduce(
+    (acc, [key, value]) => {
+      const existingIndex = acc.findIndex((a) => a.key === key)
+      if (existingIndex !== -1) {
+        acc[existingIndex].value = value
+      } else {
+        acc.push({ key, value })
+      }
+      return acc
+    },
+    [...existingAnswers],
+  )
+}
+
 const useSummaryResultStore = create<ISummaryResultState>()(
   persist(
     (set) => ({
@@ -34,20 +52,7 @@ const useSummaryResultStore = create<ISummaryResultState>()(
               ? {
                   ...item,
                   answer: item?.answer
-                    ? Object.entries(data).reduce(
-                        (acc, [key, value]) => {
-                          const existingIndex = acc.findIndex(
-                            (a) => a.key === key,
-                          )
-                          if (existingIndex !== -1) {
-                            acc[existingIndex].value = value
-                          } else {
-                            acc.push({ key, value })
-                          }
-                          return acc
-                        },
-                        [...item.answer],
-                      )
+                    ? mergeAnswers(item.answer, data)
                     : Object.entries(data).map(([key, value]) => ({
                         key,
                         value,
@@ -60,22 +65,10 @@ const useSummaryResultStore = create<ISummaryResultState>()(
                 ...state.recent_summary.find((item) => item.id === id)!,
                 answer: state.recent_summary.find((item) => item.id === id)!
                   .answer
-                  ? Object.entries(data).reduce(
-                      (acc, [key, value]) => {
-                        const existingIndex = acc.findIndex(
-                          (a) => a.key === key,
-                        )
-                        if (existingIndex !== -1) {
-                          acc[existingIndex].value = value
-                        } else {
-                          acc.push({ key, value })
-                        }
-                        return acc
-                      },
-                      [
-                        ...(state.recent_summary.find((item) => item.id === id)
-                          ?.answer ?? []),
-                      ],
+                  ? mergeAnswers(
+                      state.recent_summary.find((item) => item.id === id)!
+                        .answer as { key: string; value: any }[],
+                      data as { [key: string]: any },
                     )
                   : Object.entries(data).map(([key, value]) => ({
                       key,

@@ -11,7 +11,6 @@ export const Header: React.FC = () => {
   const [isSticky, setIsSticky] = useState(false)
   const location = useLocation()
   useEffect(() => {
-    window.scrollTo(0, 0)
     function handleScroll() {
       if (window.scrollY > 0) {
         setIsSticky(true)
@@ -19,6 +18,7 @@ export const Header: React.FC = () => {
         setIsSticky(false)
       }
     }
+
     window.addEventListener('scroll', handleScroll)
 
     return () => {

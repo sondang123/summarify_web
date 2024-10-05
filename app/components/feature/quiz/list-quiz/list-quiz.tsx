@@ -1,51 +1,53 @@
 import { Button } from '@/components/ui/button'
-import useSummaryResultStore from '@/store/summary-result-store'
-
+import { DialogScore } from '../dialog-score'
 import { CellQuiz } from './cell-quiz'
-interface ListQuizProps {
-  onSubmit: () => void
-}
-export const ListQuiz: React.FC<ListQuizProps> = ({ onSubmit }) => {
-  const { active_recent, addAnswer } = useSummaryResultStore()
-  const handleSelect = (value: number, index: number) => {
-    addAnswer({
-      data: {
-        [index]: value,
-      },
-      id: active_recent?.id ?? '',
-    })
-  }
 
+export const ListQuiz: React.FC = () => {
+  const handleSelect = (value: string) => {
+    console.log('Selected option:', value)
+  }
   return (
     <div>
       <div className="flex flex-col gap-6">
-        {active_recent?.contentQuiz?.quiz?.map((item, index) => (
-          <div key={index}>
-            <CellQuiz
-              defaultCheckedIndex={Number(
-                active_recent?.answer?.find(
-                  (i) => Number(i?.key) === Number(index + 1),
-                )?.value,
-              )}
-              question={item?.question}
-              options={item?.answers ?? []}
-              onSelect={(value) => {
-                handleSelect(value, index + 1)
-              }}
-              id={`quiz-${index}`}
-              questionNumber={index + 1}
-              totalQuestions={active_recent?.contentQuiz?.quiz?.length ?? 0}
-            />
-          </div>
-        ))}
+        <CellQuiz
+          question="Lorem ipsum dolor sit amet consectetur. Vitae mauris enim urna nunc.Lorem ipsum dolor sit amet consectetur. Vitae mauris enim urna nunc."
+          options={['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Huế']}
+          onSelect={handleSelect}
+          id="quiz1"
+          questionNumber={1}
+          totalQuestions={4}
+        />
+        <CellQuiz
+          question="Lorem ipsum dolor sit amet consectetur. Vitae mauris enim urna nunc.Lorem ipsum dolor sit amet consectetur. Vitae mauris enim urna nunc."
+          options={['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Huế']}
+          onSelect={handleSelect}
+          id="quiz2"
+          questionNumber={2}
+          totalQuestions={4}
+        />
+        <CellQuiz
+          question="Lorem ipsum dolor sit amet consectetur. Vitae mauris enim urna nunc.Lorem ipsum dolor sit amet consectetur. Vitae mauris enim urna nunc."
+          options={['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Huế']}
+          onSelect={handleSelect}
+          id="quiz3"
+          questionNumber={3}
+          totalQuestions={4}
+        />
+        <CellQuiz
+          question="Lorem ipsum dolor sit amet consectetur. Vitae mauris enim urna nunc.Lorem ipsum dolor sit amet consectetur. Vitae mauris enim urna nunc."
+          options={['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Huế']}
+          onSelect={handleSelect}
+          id="quiz4"
+          questionNumber={4}
+          totalQuestions={4}
+        />
       </div>
 
-      <Button
-        className="ml-auto mt-6 flex h-12 rounded-full bg-main-primary hover:bg-main-primary hover:opacity-80 disabled:bg-neutral-5"
-        onClick={onSubmit}
-      >
-        <p className="typo-s16-w600 px-4 text-white"> Continue</p>
-      </Button>
+      <DialogScore onPlayAgain={() => {}}>
+        <Button className="ml-auto mt-6 flex h-12 rounded-full bg-main-primary hover:bg-main-primary hover:opacity-80 disabled:bg-neutral-5">
+          <p className="typo-s16-w600 px-4 text-white"> Continue</p>
+        </Button>
+      </DialogScore>
     </div>
   )
 }

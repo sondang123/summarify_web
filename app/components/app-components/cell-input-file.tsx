@@ -1,9 +1,8 @@
 import { AppConfirmDelete } from '@/components/app-components/dialog-confirm-delete'
-import type React from 'react'
-
 import { Progress } from '@/components/ui/progress'
 import type { StatusUpload } from '@/types/cell-input-file'
 import { returnFileSize } from '@/utils'
+import type React from 'react'
 
 interface CellUpLoadedFileProps {
   showIconDelete?: boolean

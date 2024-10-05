@@ -58,7 +58,16 @@ export const SummaryContent: React.FC<ISummaryContentProps> = ({
         return <div></div>
     }
   }
+  const navigateCopy = (formattedText: string) => {
+    try {
+      navigator.clipboard.writeText(formattedText ?? '')
 
+      setShowTooltip(true)
+      setTimeout(() => setShowTooltip(false), 1000)
+    } catch (error) {
+      console.error('Error copy:', error)
+    }
+  }
   const handleCopy = async () => {
     if (activeTab === 'Transcript') {
       const formattedText = transcript?.segments
@@ -67,18 +76,10 @@ export const SummaryContent: React.FC<ISummaryContentProps> = ({
             `${formatTime(Number(item?.start))}-${formatTime(Number(item?.end))}: ${item.text}`,
         )
         .join('\n')
-      navigator.clipboard.writeText(formattedText)
 
-      setShowTooltip(true)
-      setTimeout(() => setShowTooltip(false), 1000)
+      navigateCopy(formattedText)
     } else {
-      try {
-        await navigator.clipboard.writeText(summary ?? '')
-        setShowTooltip(true)
-        setTimeout(() => setShowTooltip(false), 1000)
-      } catch (err) {
-        console.error('Không thể sao chép:', err)
-      }
+      navigateCopy(summary)
     }
   }
   return (

@@ -1,6 +1,5 @@
 import { GlobalIndicator } from '@/components/app-components/loading-indicator'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -9,57 +8,67 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-
 import { validationRules } from '@/const/form-schema'
-
-import { useSignIn } from '@/query/auth/signin'
+import { useSignUp } from '@/query/auth/sign-up'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@remix-run/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { PasswordInput } from '../../app-components/password-input'
 
-const formSchema = z.object({
-  email: z.string().email().min(validationRules.minLength, {
-    message: validationRules.minLengthMessage,
-  }),
-  password: z.string().min(validationRules.minLength, {
-    message: validationRules.minLengthMessage,
-  }),
-  remember: z.boolean().default(false).optional(),
-})
+const formSchema = z
+  .object({
+    username: z.string().min(validationRules.minLength, {
+      message: validationRules.minLengthMessage,
+    }),
+    email: z.string().email().min(validationRules.minLength, {
+      message: validationRules.minLengthMessage,
+    }),
+    password: z.string().min(validationRules.minLength, {
+      message: validationRules.minLengthMessage,
+    }),
+    rePassword: z.string(),
+  })
+  .refine(
+    (values) => {
+      return values.password === values.rePassword
+    },
+    {
+      message: 'Passwords must match!',
+      path: ['rePassword'],
+    },
+  )
 
-interface FormSignInProps {
-  onClickChangeSignUp: (event: React.MouseEvent<HTMLButtonElement>) => void
+interface FormSignUpProps {
+  onClickChangeSignIn: (event: React.MouseEvent<HTMLButtonElement>) => void
   onClose: () => void
 }
 
-export const FormSignIn: React.FC<FormSignInProps> = ({
-  onClickChangeSignUp,
+export const FormSignUp: React.FC<FormSignUpProps> = ({
+  onClickChangeSignIn,
   onClose,
 }) => {
-  const signInMutation = useSignIn()
-
+  const signUpMutation = useSignUp()
   const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      remember: false,
+      username: '',
     },
   })
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { username, email, password } = values
     GlobalIndicator.show()
-    const { email, password } = values
-    const res = await signInMutation.mutateAsync({
+    const res = await signUpMutation.mutateAsync({
+      username,
       email,
       password,
     })
 
-    if (res.data?.token) {
+    if (res?.data) {
       form.reset()
-      navigate('/')
       onClose()
+      navigate('/')
     }
     GlobalIndicator.hide()
   }
@@ -70,12 +79,28 @@ export const FormSignIn: React.FC<FormSignInProps> = ({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    placeholder="Your name"
+                    {...field}
+                    className="rounded-[30px] border-neutral-2 px-4 py-5.5"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="Email"
+                    placeholder="Enter email address"
                     {...field}
                     className="rounded-[30px] border-neutral-2 px-4 py-5.5"
                   />
@@ -91,7 +116,7 @@ export const FormSignIn: React.FC<FormSignInProps> = ({
               <FormItem>
                 <FormControl>
                   <PasswordInput
-                    placeholder="Password"
+                    placeholder="Enter password"
                     {...field}
                     className="rounded-[30px] border-neutral-2 px-4 py-5.5"
                   />
@@ -102,48 +127,38 @@ export const FormSignIn: React.FC<FormSignInProps> = ({
           />
           <FormField
             control={form.control}
-            name="remember"
+            name="rePassword"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="remember-me"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="h-5 w-5 border-neutral-5 rounded-2 data-[state=checked]:bg-main-primary"
-                    />
-                    <label
-                      htmlFor="remember-me"
-                      className="typo-s14-w400 text-neutral-1 cursor-pointer"
-                    >
-                      Remember Me
-                    </label>
-                  </div>
+                  <PasswordInput
+                    placeholder="Re-enter password"
+                    {...field}
+                    className="rounded-[30px] border-neutral-2 px-4 py-5.5"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <Button
             type="submit"
             className="w-full rounded-[30px] typo-s16-w600 text-main-light_primary py-6 bg-gradient-to-r from-[#5F1BFE] to-[#8B66E1] hover:opacity-80"
           >
-            Sign in to the Summarify
+            Sign up
           </Button>
         </form>
       </Form>
-      <p className="text-center typo-s16-w400 text-main-primary pt-5">
-        Forgot Password?
-      </p>
+
       <div>
         <p className="typo-s14-w400 text-neutral-1 text-center pt-10">
-          Don’t have an account?
+          Already have an account?
           <span
             className="text-main-primary cursor-pointer hover:opacity-80 pl-1"
-            onClick={onClickChangeSignUp}
+            onClick={onClickChangeSignIn}
           >
-            Sign up
+            Sign in
           </span>
         </p>
       </div>

@@ -1,6 +1,7 @@
 import { Input } from '@/components/ui/input'
 import type React from 'react'
 import { type ChangeEvent, useEffect, useRef, useState } from 'react'
+
 interface InputTimeProps {
   onChange: (time: string) => void
   defaultValue?: string // Thêm prop mới

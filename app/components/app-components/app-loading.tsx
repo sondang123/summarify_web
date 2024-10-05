@@ -1,4 +1,4 @@
-import { loadingAnimation } from '@/const/animation'
+import loadingAnimation from '../../../public/animation/loading.json'
 import type React from 'react'
 import { Suspense, lazy, useEffect, useState } from 'react'
 

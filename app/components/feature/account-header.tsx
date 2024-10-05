@@ -9,7 +9,7 @@ import { logoutAccount } from '@/helper/user'
 import { Button } from '../ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Skeleton } from '../ui/skeleton'
-import { DialogSignInUp } from './dialog-sign-in-up/screen-sign-in'
+import { DialogSignInUp } from './dialog-auth/screen-auth'
 
 export const AccountHeader = () => {
   const [showSignIn, setShowSignIn] = useState<boolean>(false)
@@ -124,7 +124,7 @@ export const AccountHeader = () => {
           </DialogSignInUp>
           <DialogSignInUp
             open={showSignUp}
-            type={TypeSignIn.SIGN_UP}
+            type={TypeSignIn.signUp}
             onOpenChange={setShowSignUp}
           >
             <Button className="typo-s16-w600 rounded-[30px] bg-gradient-to-r from-[#5F1BFE] to-[#8B66E1] text-main-light_primary hover:opacity-80">

@@ -1,6 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton'
-import useSummaryResultStore from '@/store/summary-result-store'
-import { formatTimeZero, timeToSeconds } from '@/utils'
+import { formatTimeZero } from '@/utils'
 import type React from 'react'
 import { Suspense, lazy } from 'react'
 
@@ -17,14 +16,13 @@ interface ICountDownTimeQuizProps {
 export const CountDownTimeQuiz: React.FC<ICountDownTimeQuizProps> = ({
   onComplete,
 }) => {
-  const { active_recent } = useSummaryResultStore()
   return (
     <Suspense
       fallback={<Skeleton className="w-[280px] rounded-full aspect-square" />}
     >
       <CountdownCircleTimer
         isPlaying
-        duration={timeToSeconds(active_recent?.contentQuiz?.time ?? '00:05:00')}
+        duration={20}
         size={280}
         strokeLinecap="butt"
         colors={['#8C60F4', '#F7B801', '#FE5353']}

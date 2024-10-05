@@ -1,9 +1,9 @@
 import { FrequentlyAskedQuestion } from '@/components/feature/frequently-asked-question'
 import { HowItWorks } from '@/components/feature/how-it-work'
 import { InputSummary } from '@/components/feature/input-summary'
-import { SummaryDemo } from '@/components/feature/summary_demo/section_summary_demo'
+import { SummaryDemo } from '@/components/feature/summary-demo/section-summary-demo'
 import { VideoSummaries } from '@/components/feature/video-summaries'
-import { setToken } from '@/helper/helper-token'
+import { setToken } from '@/helper/token'
 
 import { useEffect } from 'react'
 
