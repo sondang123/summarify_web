@@ -54,6 +54,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Scripts />
         <AppToast />
         <LoadingIndicator />
+
+        <Scripts />
       </body>
     </html>
   )

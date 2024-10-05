@@ -1,3 +1,5 @@
+import { BASE_URL_API } from '@/helper/get-env'
+
 export async function serviceApi<T>(
   endpoint: string,
   option: {
@@ -7,19 +9,15 @@ export async function serviceApi<T>(
     redirect?: any
   },
 ): Promise<{ data: T | null; error: string | null }> {
-  const baseUrlApi = process.env.BASE_URL_API
-
-  const url = `${baseUrlApi}/${endpoint}`
+  const url = `${BASE_URL_API}/${endpoint}`
 
   try {
     const response = await fetch(url, {
       ...option,
       headers: {
-        'Content-Type': 'application/json',
         ...option.headers,
       },
     })
-
     const data: any = await response.json()
     return data
   } catch (error) {

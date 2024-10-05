@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import type React from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { bannerLogin, logo } from '@/const/app-resource'
 import { TypeSignIn } from '@/types/sign-in'
 
+import { BASE_URL_API } from '@/helper/get-env'
 import { Link } from '@remix-run/react'
 import { FormSignIn } from './form-sign-in'
 import { FormSignUp } from './form-sign-up'
@@ -28,6 +29,7 @@ export const DialogSignInUp: React.FC<DialogSignInUpProps> = ({
   useEffect(() => {
     setDialogSignInUp(type)
   }, [type])
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -56,7 +58,7 @@ export const DialogSignInUp: React.FC<DialogSignInUpProps> = ({
                 Welcome Back to Summarify! <br /> Please sign in to get started
               </p>
 
-              <Link to={''}>
+              <Link to={`${BASE_URL_API}/auth/google`}>
                 <Button
                   className="mt-6 rounded-[30px] w-full h-12 typo-s16-w400 text-neutral-1"
                   variant="outline"

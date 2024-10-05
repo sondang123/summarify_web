@@ -1,5 +1,5 @@
 import { serviceApi } from '@/service-api/service-api'
-import { type ActionFunctionArgs, json } from '@remix-run/node'
+import { type ActionFunctionArgs, json } from '@remix-run/cloudflare'
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   try {

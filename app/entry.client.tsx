@@ -7,13 +7,7 @@
 import { RemixBrowser } from '@remix-run/react'
 import { StrictMode, startTransition } from 'react'
 import { hydrateRoot } from 'react-dom/client'
-declare global {
-  interface Window {
-    ENV: {
-      BASE_URL_API: string
-    }
-  }
-}
+
 startTransition(() => {
   hydrateRoot(
     document,
