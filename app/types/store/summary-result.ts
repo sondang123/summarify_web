@@ -7,7 +7,7 @@ export interface ISummaryItem {
   title: string
   quiz?: []
   id: string
-
+  answer?: any[]
   transcript?: {
     task: string
     language: string
@@ -26,6 +26,12 @@ export interface ISummaryItem {
   mindMap?: IMindmapItem[]
   video?: string
   fileVideo?: File
+  contentQuiz?: {
+    content?: string
+    quiz?: any[]
+    time?: string
+    title?: string
+  }
 }
 
 export interface ISegments {
@@ -47,6 +53,14 @@ export interface ISummaryResultState {
   addSummary: ({ data }: { data: ISummaryItem }) => void
   addIdPending: ({ id }: { id: string }) => void
   updateSummary: ({ data, id }: { data: any; id: string }) => void
+  addQuiz: ({
+    data,
+    id,
+  }: {
+    data: any
+    id: string
+  }) => void
+  addAnswer: ({ data, id }: { data: any; id: string }) => void
   setActiveRecent: ({ data }: { data: ISummaryItem | undefined }) => void
   deleteRecentSummary: ({ id }: { id: string }) => void
   renameItemRecent: ({ id, newName }: { id: string; newName: string }) => void

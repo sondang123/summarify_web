@@ -1,26 +1,16 @@
-import { cn } from '@/lib/utils'
-
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import {
-  useMindMapLinkYoutube,
-  useSummarizeLinkYoutube,
-  useTranscriptLinkMutation,
-} from '@/query/summary/summarize-link'
+import { cn } from '@/lib/utils'
 import useSummaryResultStore from '@/store/summary-result-store'
+import { uuidRandom } from '@/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import {
-  useMindMapFile,
-  useSummarizeFile,
-  useTranscriptFile,
-} from '@/query/summary/summarize-file'
-import { getYoutubeId, uuidRandom } from '@/utils'
 import { useNavigate } from '@remix-run/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { GlobalIndicator } from '../app-components/loading-indicator'
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
+
 interface IInputSummaryProps {
   showExamples?: boolean
 }
@@ -31,15 +21,10 @@ const formSchema = z
   })
   .refine(
     (data) => {
-      if (data.file) return true
-      if (!data.link || data.link.trim() === '') return false
-
-      const youtubeRegex =
-        /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/
-      return youtubeRegex.test(data.link)
+      return data.file || (data.link && data.link.trim() !== '')
     },
     {
-      message: 'Please provide a valid YouTube link or upload a file',
+      message: 'Link is required when file is not provided',
       path: ['link'],
     },
   )
@@ -48,15 +33,8 @@ export const InputSummary: React.FC<IInputSummaryProps> = ({
   showExamples = true,
 }) => {
   const navigate = useNavigate()
-  const { addSummary, addIdPending } = useSummaryResultStore()
 
-  const transcriptFile = useTranscriptFile()
-  const summarizeFile = useSummarizeFile()
-  const mindMapFile = useMindMapFile()
-
-  const transcriptLinkMutation = useTranscriptLinkMutation()
-  const summarizeLinkMutation = useSummarizeLinkYoutube()
-  const mindMapLinkMutation = useMindMapLinkYoutube()
+  const { addSummary } = useSummaryResultStore()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,40 +44,19 @@ export const InputSummary: React.FC<IInputSummaryProps> = ({
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const idRandom = uuidRandom()
-    if (values.file) {
+    GlobalIndicator.show()
+
+    setTimeout(() => {
+      GlobalIndicator.hide()
+      navigate('/summary')
       addSummary({
         data: {
-          id: idRandom,
-          title: values.file?.name ?? '',
-          fileVideo: values.file,
+          title: String(values?.link) || String(values?.file?.name),
+          id: uuidRandom(),
         },
       })
-      addIdPending({ id: idRandom })
-      const formData = new FormData()
-      formData.append('file', values.file)
-
-      transcriptFile.mutate({ formData })
-      summarizeFile.mutate({ formData })
-      mindMapFile.mutate({ formData })
-    } else if (values.link) {
-      const youtubeId = getYoutubeId(values.link)
-      addSummary({
-        data: {
-          id: idRandom,
-          title: values.link,
-          video: values.link,
-        },
-      })
-      addIdPending({ id: idRandom })
-
-      transcriptLinkMutation.mutate({ youtubeId })
-      summarizeLinkMutation.mutate({ youtubeId })
-      mindMapLinkMutation.mutate({ youtubeId })
-    }
-    navigate('/summary')
-    // Reset form
-    form.reset()
+      form.reset()
+    }, 2000)
   }
 
   return (
@@ -205,7 +162,7 @@ export const InputSummary: React.FC<IInputSummaryProps> = ({
                 </FormItem>
               )}
             />
-            <Button className="ml-6 h-15 w-[200px] shrink-0 rounded-[30px] bg-gradient-to-r from-[#5F1BFE] to-[#8B66E1] hover:opacity-80">
+            <Button className="ml-6 h-15 w-[200px] rounded-[30px] bg-gradient-to-r from-[#5F1BFE] to-[#8B66E1] hover:opacity-80">
               Generate
             </Button>
           </div>
@@ -216,7 +173,7 @@ export const InputSummary: React.FC<IInputSummaryProps> = ({
         <div className="flex items-center pt-5.5">
           <p className="typo-s16-w400 pe-2 text-neutral-1">For example:</p>
           <p className="typo-s14-w400 rounded-5 bg-main-light_primary px-3 py-1.5 text-main-primary">
-            https://www.youtube.com/watch?v=Au6LqK1UH8g
+            https://www.youtube.com/watch?v=_nuQ39Y4T5Q
           </p>
         </div>
       ) : null}

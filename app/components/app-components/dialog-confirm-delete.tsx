@@ -19,6 +19,7 @@ interface AppConfirmDeleteProps {
   onOpenChange?: React.Dispatch<React.SetStateAction<any>>
   onDelete?: () => void
 }
+
 export const AppConfirmDelete: React.FC<AppConfirmDeleteProps> = ({
   children,
   title = 'Confirm Delete',

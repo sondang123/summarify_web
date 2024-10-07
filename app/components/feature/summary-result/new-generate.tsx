@@ -8,19 +8,19 @@ interface ICellItemDemoProps {
   icon: ReactElement
   title: string
 }
+
 export const NewGenerate: React.FC = () => {
   const CellItemDemo: React.FC<ICellItemDemoProps> = ({ icon, title }) => {
     return (
       <div>
         {icon}
-
         <p className="typo-s16-w500 pt-3 text-neutral-1">{title}</p>
       </div>
     )
   }
   return (
-    <div className="mx-auto flex h-full w-[70%] flex-col justify-between pb-10 pt-25">
-      <div>
+    <div className="mx-auto flex h-[80%] w-[70%] flex-col justify-between">
+      <div className="mx-auto text-center">
         <img
           src={logo}
           width={53}
@@ -28,17 +28,16 @@ export const NewGenerate: React.FC = () => {
           alt="sumarify"
           className="mx-auto"
         />
-        <p className="typo-s18-w500 pt-4 text-center text-neutral-0">
+        <p className="typo-s18-w500 pt-4 text-neutral-0">
           Get YouTube video summaries in a minute. Just paste the link below.
         </p>
-
-        <div className="mt-10 grid grid-cols-12 gap-6">
-          {dataCellNewGenerate?.map((item, index) => (
-            <div className="col-span-4 rounded-2 border p-4" key={index}>
-              <CellItemDemo icon={item?.icon} title={item?.title} />
-            </div>
-          ))}
-        </div>
+      </div>
+      <div className="mt-10 grid grid-cols-12 gap-6">
+        {dataCellNewGenerate?.map((item, index) => (
+          <div className="col-span-4 rounded-2 border p-4" key={index}>
+            <CellItemDemo icon={item?.icon} title={item?.title} />
+          </div>
+        ))}
       </div>
       <InputSummary showExamples={false} />
     </div>

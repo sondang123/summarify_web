@@ -1,6 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import type React from 'react'
 import { useMemo } from 'react'
+
 interface IPreviewUploadProps {
   idYoutube: string
   title: string
@@ -41,16 +42,21 @@ export const PreviewUpload: React.FC<IPreviewUploadProps> = ({
         </div>
       ) : (
         <div>
-          <p className="typo-s16-w600 pt-4 text-neutral-0">{title}</p>
-
-          <div className="flex items-center justify-between pt-6">
-            <p className="typo-s14-w500 text-neutral-0">channel</p>
-            <p className="typo-s14-w500 text-neutral-1">{channel}</p>
-          </div>
-          <div className="flex items-center justify-between pt-4">
-            <p className="typo-s14-w500 text-neutral-0">Video Duration</p>
-            <p className="typo-s14-w500 text-neutral-1">{duration}</p>
-          </div>
+          {title ? (
+            <p className="typo-s16-w600 pt-4 text-neutral-0">{title}</p>
+          ) : null}
+          {channel ? (
+            <div className="flex items-center justify-between pt-6">
+              <p className="typo-s14-w500 text-neutral-0">channel</p>
+              <p className="typo-s14-w500 text-neutral-1">{channel}</p>
+            </div>
+          ) : null}
+          {duration ? (
+            <div className="flex items-center justify-between pt-4">
+              <p className="typo-s14-w500 text-neutral-0">Video Duration</p>
+              <p className="typo-s14-w500 text-neutral-1">{duration}</p>
+            </div>
+          ) : null}
         </div>
       )}
     </div>

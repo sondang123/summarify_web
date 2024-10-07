@@ -1,106 +1,75 @@
-import {
-  type Edge,
-  type Node,
-  type OnEdgesChange,
-  type OnNodesChange,
-  ReactFlow,
-  ReactFlowProvider,
-  applyEdgeChanges,
-  applyNodeChanges,
-  useEdgesState,
-  useNodesState,
-  useReactFlow,
-} from '@xyflow/react'
 import { toPng } from 'html-to-image'
-import {
+import React, {
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useState,
 } from 'react'
-import '@xyflow/react/dist/style.css'
-import { AppLoading } from '../app-components/app-loading'
+import ReactFlow, {
+  type Edge,
+  MarkerType,
+  type Node,
+  type ProOptions,
+  type ReactFlowInstance,
+  ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
+} from 'reactflow'
+import 'reactflow/dist/style.css'
+export interface MindmapRef {
+  downloadImage: () => void
+}
 
-interface HorizontalFlowProps {
+interface MindmapContentProps {
   initialNodes: Node[]
   initialEdges: Edge[]
 }
 
-export interface HorizontalFlowRef {
-  downloadImage: () => void
-}
-
-const HorizontalFlowInner = forwardRef<HorizontalFlowRef, HorizontalFlowProps>(
+const MindmapContent = forwardRef<MindmapRef, MindmapContentProps>(
   ({ initialNodes, initialEdges }, ref) => {
-    const [nodes, setNodes] = useNodesState<Node>(initialNodes)
-    const [edges, setEdges] = useEdgesState<Edge>(initialEdges)
+    const [nodes] = useNodesState<Node>(initialNodes)
+    const [edges] = useEdgesState(initialEdges)
+    const { zoomIn, zoomOut, fitView } = useReactFlow() // Add fitView here
     const [isLoading, setIsLoading] = useState(true)
-    const [nodesRendered, setNodesRendered] = useState(false)
-    const { zoomIn, zoomOut, fitView, getNodes } = useReactFlow()
+    const [reactFlowInstance, setReactFlowInstance] =
+      React.useState<ReactFlowInstance | null>(null)
 
     const downloadImage = useCallback(() => {
       fitView()
-      const node = document.querySelector('.react-flow') as HTMLElement
-      if (node) {
-        toPng(node, {
-          quality: 1,
-          width: node.offsetWidth,
-          height: node.offsetHeight,
-        })
-          .then((dataUrl) => {
-            const link = document.createElement('a')
-            link.download = 'horizontal_flow.png'
-            link.href = dataUrl
-            link.click()
+      if (reactFlowInstance) {
+        const node = document.querySelector('.react-flow') as HTMLElement
+        if (node) {
+          toPng(node, {
+            quality: 1,
+            width: node.offsetWidth,
+            height: node.offsetHeight,
           })
-          .catch((error) => {
-            console.error('Error downloading image:', error)
-          })
+            .then((dataUrl) => {
+              const link = document.createElement('a')
+              link.download = 'mind_map.png'
+              link.href = dataUrl
+              link.click()
+            })
+            .catch((error) => {
+              console.error('Error downloading image:', error)
+            })
+        }
       }
-    }, [fitView])
+    }, [reactFlowInstance])
 
     useImperativeHandle(ref, () => ({ downloadImage }))
 
-    const onNodesChange: OnNodesChange = useCallback(
-      (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-      [setNodes],
-    )
-
-    const onEdgesChange: OnEdgesChange = useCallback(
-      (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-      [setEdges],
-    )
-
-    useEffect(() => {
-      const checkNodesRendered = () => {
-        const allNodesRendered = getNodes().every((node) => {
-          const nodeElement = document.querySelector(`[data-id="${node.id}"]`)
-          return nodeElement !== null
-        })
-        if (allNodesRendered) {
-          setNodesRendered(true)
-        } else {
-          requestAnimationFrame(checkNodesRendered)
-        }
-      }
-
-      if (!isLoading) {
-        checkNodesRendered()
-      }
-    }, [isLoading, getNodes])
-
-    // Add this new useEffect
-    useEffect(() => {
-      setNodes(initialNodes)
-      setEdges(initialEdges)
-    }, [initialNodes, initialEdges, setNodes, setEdges])
+    // Add this proOptions object
+    const proOptions: ProOptions = {
+      hideAttribution: true,
+    }
 
     return (
-      <div className="relative h-[620px] w-full overflow-hidden bg-neutral-6">
-        {(isLoading || !nodesRendered) && (
+      <div className="relative h-[600px] w-full overflow-hidden bg-neutral-6">
+        {isLoading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-neutral-6 bg-opacity-50">
-            <AppLoading />
+            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
           </div>
         )}
         <div className="mx-3 ml-auto mt-3 flex w-fit gap-3 rounded-full border p-3">
@@ -152,36 +121,37 @@ const HorizontalFlowInner = forwardRef<HorizontalFlowRef, HorizontalFlowProps>(
           className="!h-[560px]"
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          fitView
-          minZoom={0.1}
-          maxZoom={3}
-          draggable={false}
-          attributionPosition="bottom-left"
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable={false}
-          onInit={() => setIsLoading(false)}
           panOnScroll
           zoomOnScroll={false}
-          proOptions={{ hideAttribution: true }}
-        />
+          fitView
+          minZoom={0.1}
+          maxZoom={3}
+          onInit={(instance) => {
+            setReactFlowInstance(instance)
+            setIsLoading(false)
+          }}
+          proOptions={proOptions} // Add this prop
+          defaultEdgeOptions={{
+            type: 'step',
+            markerEnd: { type: MarkerType.Arrow },
+          }}
+        ></ReactFlow>
       </div>
     )
   },
 )
 
-HorizontalFlowInner.displayName = 'HorizontalFlowInner'
+MindmapContent.displayName = 'MindmapContent'
 
-const HorizontalFlow = forwardRef<HorizontalFlowRef, HorizontalFlowProps>(
-  (props, ref) => (
-    <ReactFlowProvider>
-      <HorizontalFlowInner {...props} ref={ref} />
-    </ReactFlowProvider>
-  ),
-)
+const Mindmap = forwardRef<MindmapRef, MindmapContentProps>((props, ref) => (
+  <ReactFlowProvider>
+    <MindmapContent ref={ref} {...props} />
+  </ReactFlowProvider>
+))
 
-HorizontalFlow.displayName = 'HorizontalFlow'
+Mindmap.displayName = 'Mindmap'
 
-export default HorizontalFlow
+export default Mindmap

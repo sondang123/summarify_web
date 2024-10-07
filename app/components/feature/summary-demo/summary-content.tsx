@@ -7,14 +7,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import useMindmapToFlow from '@/hooks/use-horizontal-flow'
 
 import type { ISegments } from '@/types/store/summary-result'
 import { formatTime } from '@/utils'
 import { useRef, useState } from 'react'
-import type { HorizontalFlowRef } from '../horizontal-flow'
 
-import HorizontalFlow from '../horizontal-flow'
+import { useMindMapTransform } from '@/hooks/use-mind-map'
+import type { MindmapRef } from '../mind-map'
+import Mindmap from '../mind-map'
 import { Transcript } from './transcript'
 
 interface ISummaryContentProps {
@@ -29,14 +29,15 @@ export const SummaryContent: React.FC<ISummaryContentProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('Transcript')
   const [showTooltip, setShowTooltip] = useState(false)
-  const mindmapRef = useRef<HorizontalFlowRef>(null)
+  const mindmapRef = useRef<MindmapRef>(null)
   const handleDownload = () => {
     if (mindmapRef.current) {
       mindmapRef.current.downloadImage()
     }
   }
 
-  const { initialNodes, initialEdges } = useMindmapToFlow(mindMap)
+  const { nodes: initialNodes, edges: initialEdges } =
+    useMindMapTransform(mindMap)
   const ReturnTabs = () => {
     switch (activeTab) {
       case 'Transcript':
@@ -47,7 +48,7 @@ export const SummaryContent: React.FC<ISummaryContentProps> = ({
         )
       case 'Mindmap':
         return (
-          <HorizontalFlow
+          <Mindmap
             ref={mindmapRef}
             initialNodes={initialNodes}
             initialEdges={initialEdges}
@@ -57,7 +58,16 @@ export const SummaryContent: React.FC<ISummaryContentProps> = ({
         return <div></div>
     }
   }
+  const navigateCopy = (formattedText: string) => {
+    try {
+      navigator.clipboard.writeText(formattedText ?? '')
 
+      setShowTooltip(true)
+      setTimeout(() => setShowTooltip(false), 1000)
+    } catch (error) {
+      console.error('Error copy:', error)
+    }
+  }
   const handleCopy = async () => {
     if (activeTab === 'Transcript') {
       const formattedText = transcript?.segments
@@ -66,18 +76,10 @@ export const SummaryContent: React.FC<ISummaryContentProps> = ({
             `${formatTime(Number(item?.start))}-${formatTime(Number(item?.end))}: ${item.text}`,
         )
         .join('\n')
-      navigator.clipboard.writeText(formattedText)
 
-      setShowTooltip(true)
-      setTimeout(() => setShowTooltip(false), 1000)
+      navigateCopy(formattedText)
     } else {
-      try {
-        await navigator.clipboard.writeText(summary ?? '')
-        setShowTooltip(true)
-        setTimeout(() => setShowTooltip(false), 1000)
-      } catch (err) {
-        console.error('Không thể sao chép:', err)
-      }
+      navigateCopy(summary)
     }
   }
   return (

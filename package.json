@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
-    "dev": "remix vite:dev"
+    "dev": "remix vite:dev",
+    "start": "wrangler pages dev ./build/client"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -25,20 +26,18 @@
     "@remix-run/react": "^2.12.1",
     "@tanstack/react-query": "^5.51.23",
     "@tanstack/react-query-devtools": "^5.51.23",
-    "@types/dagre": "^0.7.52",
-    "@xyflow/react": "^12.3.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "dagre": "^0.8.5",
     "html-to-image": "^1.11.11",
     "isbot": "^5.1.17",
     "lodash.debounce": "^4.0.8",
+    "lottie-react": "^2.4.0",
+    "lottie-web": "^5.12.2",
     "lucide-react": "^0.427.0",
     "react": "^18.3.1",
     "react-countdown-circle-timer": "^3.2.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.52.2",
-    "react-lottie-player": "^2.1.0",
     "react-toastify": "^10.0.5",
     "reactflow": "^11.11.4",
     "tailwind-merge": "^2.5.2",
@@ -61,14 +60,10 @@
     "typescript": "^5.0.2",
     "vite": "^5.4.6",
     "vite-tsconfig-paths": "^5.0.1",
-    "wrangler": "^3.78.6"
+    "wrangler": "^3.8.0"
   },
   "resolutions": {
     "@types/react": "^18.0.8"
   },
-  "trustedDependencies": [
-    "@biomejs/biome",
-    "esbuild",
-    "workerd"
-  ]
+  "trustedDependencies": ["@biomejs/biome", "esbuild", "workerd"]
 }

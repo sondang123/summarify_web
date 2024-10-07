@@ -177,7 +177,7 @@ export const DialogCustomQuestion: React.FC<IDialogCustomQuestion> = ({
             </div>
             <p className="typo-s16-w500 py-2 text-neutral-0">Played Quiz</p>
             <div className="grid grid-cols-2 gap-6">
-              <div className="flex items-start rounded-3 bg-main-background_summary px-4 py-5">
+              <div className="bg-main-background_summary flex items-start rounded-3 px-4 py-5">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="28"
@@ -198,7 +198,7 @@ export const DialogCustomQuestion: React.FC<IDialogCustomQuestion> = ({
                   </p>
                 </div>
               </div>
-              <div className="flex items-start rounded-3 bg-main-background_summary px-4 py-5">
+              <div className="bg-main-background_summary flex items-start rounded-3 px-4 py-5">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="28"

@@ -9,6 +9,7 @@ interface UploadFileProps {
   subtileSupport?: string | React.ReactNode
   multiple?: boolean
 }
+
 export const UploadFile: React.FC<UploadFileProps> = ({
   onChange = () => {},
   acceptFile = '',

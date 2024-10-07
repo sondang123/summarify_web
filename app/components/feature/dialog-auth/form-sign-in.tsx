@@ -1,3 +1,4 @@
+import { GlobalIndicator } from '@/components/app-components/loading-indicator'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -9,7 +10,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { validationRules } from '@/const/form-schema'
+import { useSignIn } from '@/query/auth/sign-in'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from '@remix-run/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { PasswordInput } from '../../app-components/password-input'
@@ -26,11 +29,16 @@ const formSchema = z.object({
 
 interface FormSignInProps {
   onClickChangeSignUp: (event: React.MouseEvent<HTMLButtonElement>) => void
+  onClose: () => void
 }
 
 export const FormSignIn: React.FC<FormSignInProps> = ({
   onClickChangeSignUp,
+  onClose,
 }) => {
+  const signInMutation = useSignIn()
+
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,10 +46,20 @@ export const FormSignIn: React.FC<FormSignInProps> = ({
       remember: false,
     },
   })
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    GlobalIndicator.show()
+    const { email, password } = values
+    const res = await signInMutation.mutateAsync({
+      email,
+      password,
+    })
+
+    if (res.data?.token) {
+      form.reset()
+      onClose()
+      navigate('/')
+    }
+    GlobalIndicator.hide()
   }
 
   return (

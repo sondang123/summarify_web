@@ -1,6 +1,6 @@
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 
-import { Link } from '@remix-run/react'
+import { Link } from 'lucide-react'
 import type { Dispatch, SetStateAction } from 'react'
 import DashboardNav from './dashboard-nav'
 
@@ -19,7 +19,10 @@ export default function MobileSidebar({
         <SheetContent side="left" className="bg-background !px-0">
           <div className="space-y-4 py-4">
             <div className="space-y-4 px-3 py-2">
-              <Link to="/" className="px-2 py-2 text-2xl font-bold text-white">
+              <Link
+                href="/"
+                className="px-2 py-2 text-2xl font-bold text-white"
+              >
                 Logo
               </Link>
               <div className="space-y-1 px-2">

@@ -11,7 +11,6 @@ import { useSidebar } from '@/hooks/use-sidebar'
 import { cn } from '@/lib/utils'
 import useSummaryResultStore from '@/store/summary-result-store'
 
-import { useIsMutatingSummary } from '@/hooks/use-is-mutating'
 import { Link } from '@remix-run/react'
 import { useState } from 'react'
 import DashboardNav from './dashboard-nav'
@@ -30,7 +29,7 @@ export default function Sidebar({ className }: SidebarProps) {
     toggle()
     setTimeout(() => setStatus(false), 500)
   }
-  const { isLoadingOne } = useIsMutatingSummary()
+
   return (
     <nav
       className={cn(
@@ -38,7 +37,6 @@ export default function Sidebar({ className }: SidebarProps) {
         'relative z-10 hidden h-screen flex-none md:block',
         status && 'duration-500',
         !isMinimized ? 'w-80' : 'w-[80px]',
-
         className,
       )}
     >
@@ -84,14 +82,7 @@ export default function Sidebar({ className }: SidebarProps) {
             </svg>
           </div>
 
-          <div
-            className={cn(
-              'border-b border-t border-main-divider py-6',
-              isLoadingOne
-                ? 'disabled opacity-70 pointer-events-none'
-                : 'opacity-100',
-            )}
-          >
+          <div className="border-b border-t border-main-divider py-6">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="w-full">
@@ -131,14 +122,7 @@ export default function Sidebar({ className }: SidebarProps) {
         </div>
 
         <p className="typo-s14-w500 px-4 py-6 text-neutral-700">Recent</p>
-        <ScrollArea
-          className={cn(
-            'flex-1',
-            isLoadingOne
-              ? 'disabled opacity-70 pointer-events-none'
-              : 'opacity-100',
-          )}
-        >
+        <ScrollArea className="flex-1">
           <DashboardNav />
         </ScrollArea>
         <div className="pb-10">

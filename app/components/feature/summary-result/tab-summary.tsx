@@ -1,35 +1,195 @@
-import { AppLoading } from '@/components/app-components/app-loading'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import useMindmapToFlow from '@/hooks/use-horizontal-flow'
-
-import useSummaryResultStore from '@/store/summary-result-store'
-import type { ISegments } from '@/types/store/summary-result'
-import { formatTime } from '@/utils'
 import { Tooltip } from '@radix-ui/react-tooltip'
-import { useIsMutating } from '@tanstack/react-query'
-import React, { type MouseEvent, useCallback, useRef, useState } from 'react'
-
-import type { HorizontalFlowRef } from '../horizontal-flow'
-import HorizontalFlow from '../horizontal-flow'
-
-import {
-  GET_MIND_MAP_FILE,
-  GET_MIND_MAP_YOUTUBE_URL,
-  GET_SUMMARIZE_FILE,
-  GET_SUMMARIZE_YOUTUBE_URL,
-  GET_TRANSCRIPT_FILE,
-  GET_TRANSCRIPT_YOUTUBE_URL,
-} from '@/query/summary/queryKeys'
-
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { useIsMutatingSummary } from '@/hooks/use-is-mutating'
-import { Transcript } from '../summary_demo/transcript'
+import { type MouseEvent, useRef, useState } from 'react'
+import { type Edge, type Node, Position } from 'reactflow'
+import Mindmap, { type MindmapRef } from '../mind-map'
 import { RecentQuiz } from './recent-quiz'
+const initialNodes: Node[] = [
+  {
+    id: 'aji',
+    type: 'input',
+    data: { label: 'Aji' },
+    position: { x: 0, y: 0 },
+    style: {
+      background: '#FFA500',
+      color: 'white',
+      borderRadius: '20px',
+      padding: '10px',
+    },
+    sourcePosition: Position.Right,
+  },
+
+  {
+    id: 'category1',
+    data: { label: 'Category 1' },
+    position: { x: 200, y: -100 },
+    style: {
+      background: '#FF6347',
+      color: 'white',
+      borderRadius: '15px',
+      padding: '5px',
+    },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+  },
+  {
+    id: 'subcategory1-1',
+    data: { label: 'Subcategory 1-1' },
+    position: { x: 400, y: -150 },
+    style: {
+      background: '#4682B4',
+      color: 'white',
+      borderRadius: '10px',
+      padding: '3px',
+    },
+    sourcePosition: Position.Left,
+    targetPosition: Position.Left,
+  },
+  {
+    id: 'subcategory1-2',
+    data: { label: 'Subcategory 1-2' },
+    position: { x: 400, y: -50 },
+    style: {
+      background: '#4682B4',
+      color: 'white',
+      borderRadius: '10px',
+      padding: '3px',
+    },
+    sourcePosition: Position.Left,
+    targetPosition: Position.Left,
+  },
+
+  {
+    id: 'category2',
+    data: { label: 'Category 2' },
+    position: { x: 200, y: 100 },
+    style: {
+      background: '#32CD32',
+      color: 'white',
+      borderRadius: '15px',
+      padding: '5px',
+    },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+  },
+  {
+    id: 'subcategory2-1',
+    data: { label: 'Subcategory 2-1' },
+    position: { x: 400, y: 50 },
+    style: {
+      background: '#9370DB',
+      color: 'white',
+      borderRadius: '10px',
+      padding: '3px',
+    },
+    sourcePosition: Position.Left,
+    targetPosition: Position.Left,
+  },
+  {
+    id: 'subcategory2-2',
+    data: { label: 'Subcategory 2-2' },
+    position: { x: 400, y: 150 },
+    style: {
+      background: '#9370DB',
+      color: 'white',
+      borderRadius: '10px',
+      padding: '3px',
+    },
+    sourcePosition: Position.Left,
+    targetPosition: Position.Left,
+  },
+  {
+    id: 'subcategory2-3',
+    data: { label: 'Subcategory 2-3' },
+    position: { x: 400, y: 250 },
+    style: {
+      background: '#9370DB',
+      color: 'white',
+      borderRadius: '10px',
+      padding: '3px',
+    },
+    sourcePosition: Position.Left,
+    targetPosition: Position.Left,
+  },
+  {
+    id: 'subcategory2-4',
+    data: { label: 'subcategory2-4' },
+    position: { x: 400, y: 350 },
+    style: {
+      background: '#FF6347',
+      color: 'white',
+      borderRadius: '15px',
+      padding: '5px',
+    },
+    sourcePosition: Position.Left,
+    targetPosition: Position.Left,
+  },
+]
+
+const initialEdges: Edge[] = [
+  {
+    id: 'e-aji-category1',
+    source: 'aji',
+    target: 'category1',
+
+    type: 'step',
+    style: { stroke: '#FF6347' },
+  },
+  {
+    id: 'e-aji-category2',
+    source: 'aji',
+    target: 'category2',
+    style: { stroke: '#32CD32' },
+    type: 'step',
+  },
+  {
+    id: 'e-category1-sub1-1',
+    source: 'category1',
+    target: 'subcategory1-1',
+    style: { stroke: '#4682B4' },
+    type: 'step',
+  },
+  {
+    id: 'e-category1-sub1-2',
+    source: 'category1',
+    target: 'subcategory1-2',
+    style: { stroke: '#4682B4' },
+    type: 'step',
+  },
+  {
+    id: 'e-category2-sub2-1',
+    source: 'category2',
+    target: 'subcategory2-1',
+    style: { stroke: '#9370DB' },
+    type: 'step',
+  },
+  {
+    id: 'e-category2-sub2-2',
+    source: 'category2',
+    target: 'subcategory2-2',
+    style: { stroke: '#9370DB' },
+    type: 'step',
+  },
+  {
+    id: 'e-category2-sub2-3',
+    source: 'category2',
+    target: 'subcategory2-3',
+    style: { stroke: '#9370DB' },
+    type: 'step',
+  },
+  {
+    id: 'e-category2-sub2-4',
+    source: 'category2',
+    target: 'subcategory2-4',
+    style: { stroke: '#9370DB' },
+    type: 'step',
+  },
+]
 
 interface IHeaderCopy {
   title: string
@@ -39,119 +199,86 @@ interface IHeaderCopy {
   iconRight?: React.ReactNode
 }
 
-export const TabsSummary = React.memo(() => {
+export const TabsSummary = () => {
   const [showTooltip, setShowTooltip] = useState(false)
-  const { active_recent, idPending } = useSummaryResultStore()
-
-  const handleCopy = useCallback(async (content: string) => {
+  const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(content ?? '')
+      await navigator.clipboard.writeText('Nội dung cần sao chép')
       setShowTooltip(true)
       setTimeout(() => setShowTooltip(false), 1000)
     } catch (err) {
       console.error('Không thể sao chép:', err)
     }
-  }, [])
-
-  const handleCopyTranscript = () => {
-    const formattedText = active_recent?.transcript?.segments
-      ?.map(
-        (item: ISegments) =>
-          `${formatTime(Number(item?.start))}-${formatTime(Number(item?.end))}: ${item.text}`,
-      )
-      .join('\n')
-    navigator.clipboard.writeText(formattedText ?? '')
-
-    setShowTooltip(true)
-    setTimeout(() => setShowTooltip(false), 1000)
+  }
+  const HeaderCopy = ({
+    iconLeft,
+    title,
+    clickCopy,
+    showCopy = true,
+    iconRight,
+  }: IHeaderCopy) => {
+    return (
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          {iconLeft}
+          <p className="typo-s20-w600 text-neutral-0">{title}</p>
+        </div>
+        {showCopy ? (
+          <TooltipProvider>
+            <Tooltip open={showTooltip}>
+              <TooltipTrigger asChild>
+                <div
+                  className="flex cursor-pointer items-center hover:opacity-80"
+                  onClick={clickCopy}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="me-2"
+                  >
+                    <path
+                      d="M20.53 7.47L15.53 2.47C15.389 2.329 15.199 2.25 15 2.25H10.3999C8.3979 2.25 7.25 3.39799 7.25 5.39999V6.25H6.3999C4.3979 6.25 3.25 7.39799 3.25 9.39999V19.6C3.25 21.601 4.3979 22.75 6.3999 22.75H13.5991C15.6011 22.75 16.749 21.602 16.749 19.6V18.75H17.5991C19.6011 18.75 20.749 17.602 20.749 15.6V8C20.75 7.801 20.671 7.61 20.53 7.47ZM15.75 4.811L18.189 7.25H17.5C16.24 7.25 15.75 6.759 15.75 5.5V4.811ZM15.25 19.6C15.25 20.787 14.7871 21.25 13.6001 21.25H6.40088C5.21288 21.25 4.75098 20.787 4.75098 19.6V9.39999C4.75098 8.21299 5.21388 7.75 6.40088 7.75H7.25098V15.6C7.25098 17.601 8.39888 18.75 10.4009 18.75H15.251V19.6H15.25ZM17.6001 17.25H10.4009C9.21288 17.25 8.75098 16.787 8.75098 15.6V5.39999C8.75098 4.21299 9.21388 3.75 10.4009 3.75H14.251V5.5C14.251 7.596 15.405 8.75 17.501 8.75H19.251V15.6C19.25 16.787 18.7871 17.25 17.6001 17.25Z"
+                      fill="#8C60F4"
+                    />
+                  </svg>
+                  <p className="typo-s14-w500 text-main-primary">Copy</p>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="typo-s16-w600 border-none bg-main-success text-white shadow-none outline-none">
+                Copy success!
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : null}
+        {iconRight ?? null}
+      </div>
+    )
   }
 
-  const HeaderCopy = useCallback(
-    ({
-      iconLeft,
-      title,
-      clickCopy,
-      showCopy = true,
-      iconRight,
-    }: IHeaderCopy) => {
-      return (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            {iconLeft}
-            <p className="typo-s20-w600 text-neutral-0">{title}</p>
-          </div>
-          {showCopy ? (
-            <TooltipProvider>
-              <Tooltip open={showTooltip}>
-                <TooltipTrigger asChild>
-                  <div
-                    className="flex cursor-pointer items-center hover:opacity-80"
-                    onClick={clickCopy}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      className="me-2"
-                    >
-                      <path
-                        d="M20.53 7.47L15.53 2.47C15.389 2.329 15.199 2.25 15 2.25H10.3999C8.3979 2.25 7.25 3.39799 7.25 5.39999V6.25H6.3999C4.3979 6.25 3.25 7.39799 3.25 9.39999V19.6C3.25 21.601 4.3979 22.75 6.3999 22.75H13.5991C15.6011 22.75 16.749 21.602 16.749 19.6V18.75H17.5991C19.6011 18.75 20.749 17.602 20.749 15.6V8C20.75 7.801 20.671 7.61 20.53 7.47ZM15.75 4.811L18.189 7.25H17.5C16.24 7.25 15.75 6.759 15.75 5.5V4.811ZM15.25 19.6C15.25 20.787 14.7871 21.25 13.6001 21.25H6.40088C5.21288 21.25 4.75098 20.787 4.75098 19.6V9.39999C4.75098 8.21299 5.21388 7.75 6.40088 7.75H7.25098V15.6C7.25098 17.601 8.39888 18.75 10.4009 18.75H15.251V19.6H15.25ZM17.6001 17.25H10.4009C9.21288 17.25 8.75098 16.787 8.75098 15.6V5.39999C8.75098 4.21299 9.21388 3.75 10.4009 3.75H14.251V5.5C14.251 7.596 15.405 8.75 17.501 8.75H19.251V15.6C19.25 16.787 18.7871 17.25 17.6001 17.25Z"
-                        fill="#8C60F4"
-                      />
-                    </svg>
-                    <p className="typo-s14-w500 text-main-primary">Copy</p>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent className="typo-s16-w600 border-none bg-main-success text-white shadow-none outline-none">
-                  Copy success!
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : null}
-          {iconRight ?? null}
-        </div>
-      )
-    },
-    [showTooltip],
-  )
-
-  const mindmapRef = useRef<HorizontalFlowRef>(null)
-  const handleDownload = useCallback(() => {
+  const mindmapRef = useRef<MindmapRef>(null)
+  const handleDownload = () => {
     if (mindmapRef.current) {
       mindmapRef.current.downloadImage()
     }
-  }, [])
-
-  const { initialNodes, initialEdges } = useMindmapToFlow(
-    active_recent?.mindMap ?? [],
-  )
-
-  const {
-    isMutating,
-    isSummarizeLink,
-    isMindMapLink,
-    isMutatingFile,
-    isSummarizeFile,
-    isMindMapFile,
-  } = useIsMutatingSummary()
-
+  }
   return (
     <div>
-      <Tabs defaultValue="Transcript">
+      <Tabs defaultValue="Summary">
         <TabsList className="w-[70%] justify-between bg-transparent p-0">
-          <TabsTrigger
-            value="Transcript"
-            className="typo-s14-w500 flex-1 py-2.5 data-[state=active]:typo-s14-w600 data-[state=active]:rounded-none data-[state=active]:rounded-tl-2 data-[state=active]:rounded-tr-2 data-[state=active]:bg-white data-[state=active]:shadow-none"
-          >
-            Transcript
-          </TabsTrigger>
           <TabsTrigger
             value="Summary"
             className="typo-s14-w500 flex-1 py-2.5 data-[state=active]:typo-s14-w600 data-[state=active]:rounded-none data-[state=active]:rounded-tl-2 data-[state=active]:rounded-tr-2 data-[state=active]:bg-white data-[state=active]:shadow-none"
           >
             Summary
+          </TabsTrigger>
+          <TabsTrigger
+            value="Transcript"
+            className="typo-s14-w500 flex-1 py-2.5 data-[state=active]:typo-s14-w600 data-[state=active]:rounded-none data-[state=active]:rounded-tl-2 data-[state=active]:rounded-tr-2 data-[state=active]:bg-white data-[state=active]:shadow-none"
+          >
+            Transcript
           </TabsTrigger>
           <TabsTrigger
             value="Mindmap"
@@ -168,12 +295,12 @@ export const TabsSummary = React.memo(() => {
         </TabsList>
         <TabsContent
           value="Summary"
-          className="mt-0 rounded-2 border-t border-main-divider bg-white p-6"
+          className="mt-0 rounded-2 rounded-tl-none border-t border-main-divider bg-white p-6"
         >
           <HeaderCopy
             title="Summary"
             clickCopy={() => {
-              handleCopy(active_recent?.summarize ?? '')
+              handleCopy()
             }}
             iconLeft={
               <svg
@@ -191,27 +318,15 @@ export const TabsSummary = React.memo(() => {
               </svg>
             }
           />
-          {(isSummarizeLink || isSummarizeFile) &&
-          active_recent?.id === idPending ? (
-            <div className="flex h-[60vh] items-center justify-center">
-              <AppLoading />
-            </div>
-          ) : (
-            <ScrollArea className="h-[60vh]">
-              <p className="typo-s16-w400 mt-4 text-neutral-1">
-                {active_recent?.summarize}
-              </p>
-            </ScrollArea>
-          )}
         </TabsContent>
         <TabsContent
           value="Transcript"
-          className="mt-0 rounded-2 rounded-tl-none border-t border-main-divider bg-white p-6"
+          className="mt-0 rounded-2 border-t border-main-divider bg-white p-6"
         >
           <HeaderCopy
             title="Transcript"
             clickCopy={() => {
-              handleCopyTranscript()
+              handleCopy()
             }}
             iconLeft={
               <svg
@@ -229,13 +344,6 @@ export const TabsSummary = React.memo(() => {
               </svg>
             }
           />
-          {(isMutating || isMutatingFile) && active_recent?.id === idPending ? (
-            <div className="flex h-[60vh] items-center justify-center">
-              <AppLoading />
-            </div>
-          ) : (
-            <Transcript segments={active_recent?.transcript?.segments ?? []} />
-          )}
         </TabsContent>
         <TabsContent
           value="Mindmap"
@@ -283,18 +391,11 @@ export const TabsSummary = React.memo(() => {
               }
             />
           </div>
-          {(isMindMapLink || isMindMapFile) &&
-          active_recent?.id === idPending ? (
-            <div className="flex h-[60vh] items-center justify-center">
-              <AppLoading />
-            </div>
-          ) : (
-            <HorizontalFlow
-              ref={mindmapRef}
-              initialNodes={initialNodes}
-              initialEdges={initialEdges}
-            />
-          )}
+          <Mindmap
+            ref={mindmapRef}
+            initialNodes={initialNodes}
+            initialEdges={initialEdges}
+          />
         </TabsContent>
         <TabsContent
           value="Quiz"
@@ -324,4 +425,4 @@ export const TabsSummary = React.memo(() => {
       </Tabs>
     </div>
   )
-})
+}

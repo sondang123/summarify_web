@@ -7,11 +7,11 @@ export default function DefaultLayout({
 }: {
   children: React.ReactNode
 }) {
-  const location = useLocation()
+  const pathname = useLocation()
 
   return (
     <section>
-      {location?.pathname === '/' ? (
+      {pathname?.pathname === '/' ? (
         <div>
           <Header />
           {children}

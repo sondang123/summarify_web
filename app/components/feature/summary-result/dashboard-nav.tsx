@@ -1,3 +1,4 @@
+import { GlobalIndicator } from '@/components/app-components/loading-indicator'
 import {
   Tooltip,
   TooltipContent,
@@ -50,7 +51,11 @@ export default function DashboardNav({
                       !isMinimized ? 'px-4 py-2.5' : 'px-3 py-2',
                     )}
                     onClick={() => {
+                      GlobalIndicator.show()
                       setActiveRecent({ data: item })
+                      setTimeout(() => {
+                        GlobalIndicator.hide()
+                      }, 200)
                       if (setOpen) setOpen(false)
                     }}
                   >
